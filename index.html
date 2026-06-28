@@ -115,7 +115,7 @@
 
 <div class="container">
     <div class="logo-container">
-        <img src="https://i.ibb.co/Psxd4P4g/UBICO-MUNDIAL.jpg" alt="Logo Typera">
+        <img src="https://i.ibb.co/Psxd4G4g/UBICO-MUNDIAL.jpg" alt="Logo Typera">
     </div>
 
     <h1>🏆 UBICO MUNDIAL 2026 ⚽</h1>
@@ -189,7 +189,7 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbwITEYeeJMhwBvCygn9f75aGAmkIfRL8XJV7erXPZYOj84GDMBXgWHLvut7rNXIBag4hA/exec";
     const KEY_NAME = "sheet1"; 
 
-    const groupsOrder = ["1/16", "1/8", "1/4", "1/2", "FINAŁ"];
+    const groupsOrder = ["1/16", "1/8", "1/4", "1/2", "FINALE"];
     let currentGroupIndex = 0; 
     let localDraftScores = {}; 
     let existingDatabaseRows = [];
@@ -198,7 +198,7 @@
     const teamFlags = {
         "Meksyk": "🇲🇽", "RPA": "🇿🇦", "Korea Płd.": "🇰🇷", "Czechy": "🇨🇿", "Korea Południowa": "🇰🇷",
         "Kanada": "🇨🇦", "Bośnia i Herc.": "🇧🇦", "Bośnia i Hercegowina": "🇧🇦", "Bośnia i Herceg.": "🇧🇦", "Bośnia": "🇧🇦", "Katar": "🇶🇦", "Szwajcaria": "🇨🇭",
-        "Brazylia": "🇧🇷", "Maroko": "🇲🇦", "Haiti": "🇭🇹", "Szkocja": "🏴󠁧󠁢󠁳󠁣󠁴U+E007F",
+        "Brazylia": "🇧🇷", "Maroko": "🇲🇦", "Haiti": "🇭🇹", "Szkocja": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
         "USA": "🇺🇸", "Paragwaj": "🇵🇾", "Australia": "🇦🇺", "Turcja": "🇹🇷",
         "Niemcy": "🇩🇪", "Curacao": "🇨🇼", "Curaçao": "🇨🇼", "WKS": "🇨🇮", "Ekwador": "🇪🇨",
         "Holandia": "🇳🇱", "Japonia": "🇯🇵", "Szwecja": "🇸🇪", "Tunezja": "🇹🇳",
@@ -207,7 +207,7 @@
         "Francja": "🇫🇷", "Senegal": "🇸🇳", "Irak": "🇮🇶", "Norwegia": "🇳🇴",
         "Argentyna": "🇦🇷", "Algieria": "🇩🇿", "Austria": "🇦🇹", "Jordania": "🇯🇴",
         "Portugalia": "🇵🇹", "DR Kongo": "🇨🇩", "DR Konga": "🇨🇩", "Uzbekistan": "🇺🇿", "Kolumbia": "🇨🇴",
-        "Anglia": "🏴󠁧🏴󠁧󠁢󠁥󠁮󠁧󠁿", "Chorwacja": "🇭🇷", "Ghana": "🇬🇭", "Panama": "🇵🇦",
+        "Anglia": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "Chorwacja": "🇭🇷", "Ghana": "🇬🇭", "Panama": "🇵🇦",
         "TBD": "❓", "Zwycięzca RPA/Kanada": "❓", "Zwycięzca Holandia/Maroko": "❓", "Zwycięzca Niemcy/Paragwaj": "❓", "Zwycięzca Francja/Szwecja": "❓",
         "Zwycięzca Brazylia/Japonia": "❓", "Zwycięzca WKS/Norwegia": "❓", "Zwycięzca Meksyk/Ekwador": "❓", "Zwycięzca Anglia/DR Konga": "❓",
         "Zwycięzca Portugalia/Chorwacja": "❓", "Zwycięzca Hiszpania/Austria": "❓", "Zwycięzca USA/Bośnia": "❓", "Zwycięzca Belgia/Senegal": "❓",
@@ -269,7 +269,7 @@
         { id: "Mecz69", group: "L", t1: "Anglia", t2: "Ghana", lock: "2026-06-23T22:00:00", score: "0:0" },
         { id: "Mecz70", group: "L", t1: "Panama", t2: "Chorwacja", lock: "2026-06-24T01:00:00", score: "0:1" },
         { id: "Mecz64", group: "K", t1: "Kolumbia", t2: "DR Kongo", lock: "2026-06-24T04:00:00", score: "1:0" },
-        { id: "Mecz11", group: "B", t1: "Szwajcaria", t2: "Kanada", lock: "2026-06-24T21:00:00", score: "2:1" },
+        { id: "Mecz11", group: "B", t1: "Szwajcaria", t2: "Kanada", lock: "2026-06-24+T21:00:00", score: "2:1" },
         { id: "Mecz12", group: "B", t1: "Bośnia i Herc.", t2: "Katar", lock: "2026-06-24T21:00:00", score: "3:1" },
         { id: "Mecz18", group: "C", t1: "Maroko", t2: "Haiti", lock: "2026-06-25T00:00:00", score: "4:2" },
         { id: "Mecz17", group: "C", t1: "Szkocja", t2: "Brazylia", lock: "2026-06-25T00:00:00", score: "0:3" },
@@ -302,7 +302,7 @@
         { id: "Mecz77", group: "1/16", t1: "WKS", t2: "Norwegia", lock: R32_LOCK_TIME, score: "" },
         { id: "Mecz78", group: "1/16", t1: "Francja", t2: "Szwecja", lock: R32_LOCK_TIME, score: "" },
         { id: "Mecz79", group: "1/16", t1: "Meksyk", t2: "Ekwador", lock: R32_LOCK_TIME, score: "" },
-        { id: "Mecz80", group: "1/16", t1: "Anglia", t2: "DR Konga", lock: R32_LOCK_TIME, score: "" },
+        { id: "Mecz80", group: "1/16", t1: "Anglia", t2: "DR Kongo", lock: R32_LOCK_TIME, score: "" },
         { id: "Mecz81", group: "1/16", t1: "Belgia", t2: "Senegal", lock: R32_LOCK_TIME, score: "" },
         { id: "Mecz82", group: "1/16", t1: "USA", t2: "Bośnia i Hercegowina", lock: R32_LOCK_TIME, score: "" },
         { id: "Mecz83", group: "1/16", t1: "Hiszpania", t2: "Austria", lock: R32_LOCK_TIME, score: "" },
@@ -317,7 +317,7 @@
         { id: "Mecz90", group: "1/8", t1: "Zwycięzca Niemcy/Paragwaj", t2: "Zwycięzca Francja/Szwecja", lock: "2026-07-04T22:00:00", score: "", venue: "Filadelfia" },
         { id: "Mecz91", group: "1/8", t1: "Zwycięzca Brazylia/Japonia", t2: "Zwycięzca WKS/Norwegia", lock: "2026-07-05T19:00:00", score: "", venue: "East Rutherford" },
         { id: "Mecz92", group: "1/8", t1: "Mecz 1/8 finału (zachód)", t2: "TBD", lock: "2026-07-05T23:00:00", score: "", venue: "Strefa Zachodnia" },
-        { id: "Mecz93", group: "1/8", t1: "Zwycięzca Meksyk/Ekwador", t2: "Zwycięzca Anglia/DR Konga", lock: "2026-07-06T01:00:00", score: "", venue: "Meksyk" },
+        { id: "Mecz93", group: "1/8", t1: "Zwycięzca Meksyk/Ekwador", t2: "Zwycięzca Anglia/DR Kongo", lock: "2026-07-06T01:00:00", score: "", venue: "Meksyk" },
         { id: "Mecz94", group: "1/8", t1: "Zwycięzca Portugalia/Chorwacja", t2: "Zwycięzca Hiszpania/Austria", lock: "2026-07-06T20:00:00", score: "", venue: "Arlington" },
         { id: "Mecz95", group: "1/8", t1: "Zwycięzca USA/Bośnia", t2: "Zwycięzca Belgia/Senegal", lock: "2026-07-07T01:00:00", score: "", venue: "Seattle" },
         { id: "Mecz96", group: "1/8", t1: "Zwycięzca Argentyna/Zielony Przylądek", t2: "Zwycięzca Australia/Egipt", lock: "2026-07-07T17:00:00", score: "", venue: "Atlanta" },
@@ -334,8 +334,8 @@
         { id: "Mecz102", group: "1/2", t1: "Półfinał 2", t2: "TBD", lock: "2026-07-15T22:00:00", score: "", venue: "Atlanta" },
 
         // --- MECZ O 3. MIEJSCE ORAZ FINAŁ ---
-        { id: "Mecz103", group: "FINAŁ", t1: "Przegrany Półfinału 1", t2: "Przegrany Półfinału 2", lock: "2026-07-18T22:00:00", score: "", venue: "Miami (Mecz o 3. miejsce)" },
-        { id: "Mecz104", group: "FINAŁ", t1: "Zwycięzca Półfinału 1", t2: "Zwycięzca Półfinału 2", lock: "2026-07-19T21:00:00", score: "", venue: "MetLife Stadium (Wielki Finał)" }
+        { id: "Mecz103", group: "FINALE", t1: "Przegrany Półfinału 1", t2: "Przegrany Półfinału 2", lock: "2026-07-18T22:00:00", score: "", venue: "Miami (Mecz o 3. miejsce)" },
+        { id: "Mecz104", group: "FINALE", t1: "Zwycięzca Półfinału 1", t2: "Zwycięzca Półfinału 2", lock: "2026-07-19T21:00:00", score: "", venue: "MetLife Stadium (Wielki Finał)" }
     ];
 
     function getFlagAnd3LetterCode(teamName) {
@@ -690,19 +690,44 @@
         buildGlobalTableUI();
     }
 
-    function evaluatePrediction(playerPrediction, officialResult) {
+    function evaluatePrediction(playerPrediction, officialResult, groupPhase) {
         if (!officialResult || officialResult === "" || !playerPrediction || playerPrediction === "-" || !playerPrediction.includes(":")) {
             return { points: 0, cssClass: "", type: "none" };
         }
-        if (playerPrediction.trim() === officialResult.trim()) {
-            return { points: 45, cssClass: "cell-exact", type: "exact" };
+
+        // Domyślne stawki dla Fazy Grupowej (ABC...)
+        let pointsExact = 45; 
+        let pointsTrend = 30;
+
+        // Dynamiczne sprawdzanie fazy meczu i przypisywanie punktów
+        if (groupPhase === "1/16") {
+            pointsExact = 90;
+            pointsTrend = 60;
+        } else if (groupPhase === "1/8") {
+            pointsExact = 135;
+            pointsTrend = 90;
+        } else if (groupPhase === "1/4") {
+            pointsExact = 180;
+            pointsTrend = 120;
+        } else if (groupPhase === "1/2") {
+            pointsExact = 225;
+            pointsTrend = 150;
+        } else if (groupPhase === "FINALE") {
+            pointsExact = 270;
+            pointsTrend = 180;
         }
+
+        if (playerPrediction.trim() === officialResult.trim()) {
+            return { points: pointsExact, cssClass: "cell-exact", type: "exact" };
+        }
+        
         const [pHome, pAway] = playerPrediction.split(":").map(Number);
         const [oHome, oAway] = officialResult.split(":").map(Number);
         const playerTrend = pHome > pAway ? 1 : (pHome < pAway ? -1 : 0);
         const officialTrend = oHome > oAway ? 1 : (oHome < oAway ? -1 : 0);
+        
         if (playerTrend === officialTrend) {
-            return { points: 30, cssClass: "cell-trend", type: "trend" };
+            return { points: pointsTrend, cssClass: "cell-trend", type: "trend" };
         }
         return { points: 0, cssClass: "cell-miss", type: "miss" };
     }
@@ -766,7 +791,7 @@
             allMatches.forEach(m => {
                 const matchKey = m.id.toLowerCase();
                 const playerPrediction = row[matchKey] || '-';
-                const evaluation = evaluatePrediction(playerPrediction, m.score);
+                const evaluation = evaluatePrediction(playerPrediction, m.score, m.group);
                 totalPoints += evaluation.points;
                 if (evaluation.type === "exact") countExact++;
                 if (evaluation.type === "trend") countTrend++;
@@ -775,7 +800,7 @@
             filteredMatches.forEach(m => {
                 const matchKey = m.id.toLowerCase();
                 const playerPrediction = row[matchKey] || '-';
-                const evaluation = evaluatePrediction(playerPrediction, m.score);
+                const evaluation = evaluatePrediction(playerPrediction, m.score, m.group);
 
                 let cellTextToShow = playerPrediction;
                 let finalCssClass = evaluation.cssClass;
@@ -817,4 +842,3 @@
 </script>
 </body>
 </html>
-
