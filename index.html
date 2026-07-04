@@ -4,14 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oficjalny Typer Mundial UBICO 2026</title>
-    <link rel="icon" type="image/jpeg" href="https://i.ibb.co/Qv1dF627/ubc.png">
+   <link rel="icon" type="image/jpeg" href="https://i.ibb.co/Qv1dF627/ubc.png">
     <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@14.1.0/dist/twemoji.min.js" crossorigin="anonymous"></script>
     <style>
         :root { --primary: #01c38d; --bg: #131927; --card: #1e2640; --text: #ffffff; --danger: #ff4a4a; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
         .container { max-width: 600px; width: 100%; box-sizing: border-box; }
+        
         .logo-container { text-align: center; margin-bottom: 10px; width: 100%; }
         .logo-container img { max-width: 180px; width: 100%; height: auto; object-fit: containment; }
+        
         h1, h2 { text-align: center; color: var(--primary); margin-bottom: 5px; }
         .group-header-active { background: #1a2238; color: var(--primary); font-weight: bold; padding: 12px; border-radius: 6px; margin: 15px 0; text-align: center; font-size: 18px; border: 2px solid var(--primary); }
         .card { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 20px; box-sizing: border-box; }
@@ -21,9 +23,11 @@
         button:disabled { background: #4a5568; color: #a0aec0; cursor: not-allowed; box-shadow: none !important; }
         button:hover:not(:disabled) { opacity: 0.9; }
         .hidden { display: none !important; }
+        
         #loading-screen { text-align: center; padding: 40px 20px; }
         .spinner { border: 4px solid rgba(255,255,255,0.1); width: 42px; height: 42px; border-radius: 50%; border-left-color: var(--primary); animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         .match-row { display: flex; align-items: center; justify-content: space-between; margin: 12px 0; padding-bottom: 8px; border-bottom: 1px solid #2a3558; }
         .match-info { display: flex; flex-direction: column; width: 65%; }
         .match-teams { font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -33,16 +37,21 @@
         .score-inputs { display: flex; gap: 8px; align-items: center; }
         .score-inputs input { width: 42px; text-align: center; margin: 0; padding: 6px; background: #2a3558; color: white; border: none; border-radius: 4px; font-size: 16px; }
         .score-inputs input:disabled { background: #131927; color: #6c7a9c; cursor: not-allowed; }
+        
         .success-box { background: rgba(1, 195, 141, 0.1); border: 2px dashed var(--primary); color: var(--primary); text-align: center; padding: 15px; border-radius: 8px; margin-top: 25px; font-weight: bold; font-size: 16px; }
+        
         img.emoji { height: 1.2em; width: 1.2em; margin: 0 .15em; vertical-align: -0.2em; }
+        
         .table-container { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 1000px; }
         th, td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #2a3558; font-size: 12px; }
         th { color: var(--primary); background: #1a2238; font-weight: 600; vertical-align: middle; }
-        .th-match-header { font-size: 12px; font-weight: bold; color: white; white-space: nowrap; min-width: 120px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .th-match-header { font-size: 12px; font-weight: bold; color: white; white-space: nowrap; min-width: 120px; text-align: center; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        
         .cell-exact { background-color: #028a5a !important; color: white !important; font-weight: bold; } 
         .cell-trend { background-color: #b8860b !important; color: white !important; font-weight: bold; } 
         .cell-miss { background-color: #8b0000 !important; color: #ffcccc !important; } 
+
         .leaderboard-table { min-width: 100% !important; }
         .leaderboard-table th, .leaderboard-table td { padding: 10px; font-size: 14px; }
         .leaderboard-row:nth-child(1) { background: rgba(255, 215, 0, 0.15); } 
@@ -51,15 +60,55 @@
         .leaderboard-row:nth-child(2) .rank-badge { background: #c0c0c0; color: #131927; }
         .leaderboard-row:nth-child(3) .rank-badge { background: #cd7f32; color: #131927; }
         .stats-span { font-size: 11px; color: #8a99ad; margin-left: 5px; font-weight: normal; }
-        .progress-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; background: #1a2238; padding: 8px; border-radius: 6px; margin-bottom: 15px; box-sizing: border-box; }
-        .progress-step { color: #6c7a9c; background: #131927; cursor: pointer; padding: 10px 0; border-radius: 4px; transition: background 0.2s; text-align: center; font-size: 13px; font-weight: bold; }
+
+        .progress-bar { 
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 6px; 
+            background: #1a2238; 
+            padding: 8px; 
+            border-radius: 6px; 
+            margin-bottom: 15px; 
+            box-sizing: border-box;
+        }
+        .progress-step { 
+            color: #6c7a9c;
+            background: #131927;
+            cursor: pointer; 
+            padding: 10px 0; 
+            border-radius: 4px; 
+            transition: background 0.2s; 
+            text-align: center; 
+            font-size: 13px; 
+            font-weight: bold;
+        }
         .progress-step:hover:not(.step-locked) { background: #2a3558; color: white; }
         .progress-step.active { color: var(--bg); background: var(--primary); }
         .progress-step.step-locked { color: #4a5568; background: #161c2e; cursor: not-allowed; opacity: 0.6; }
-        .table-filter-bar { display: flex; gap: 10px; margin-bottom: 15px; }
-        .filter-btn { flex: 1; background: #2a3558; color: #a0aec0; border: 2px solid transparent; padding: 10px; font-size: 13px; margin: 0; }
-        .filter-btn.active { background: #1e2640; color: var(--primary); border-color: var(--primary); }
-        @media (min-width: 500px) { .logo-container img { max-width: 240px; } }
+
+        .table-filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .filter-btn {
+            flex: 1;
+            background: #2a3558;
+            color: #a0aec0;
+            border: 2px solid transparent;
+            padding: 10px;
+            font-size: 13px;
+            margin: 0;
+        }
+        .filter-btn.active {
+            background: #1e2640;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        @media (min-width: 500px) {
+            .logo-container img { max-width: 240px; }
+        }
     </style>
 </head>
 <body>
@@ -86,18 +135,27 @@
     <div id="app-screen" class="hidden">
         <div class="card">
             <h3>Gracz: <span id="user-display" style="color:var(--primary)"></span></h3>
+            
             <div class="progress-bar" id="steps-bar"></div>
+
             <div id="group-title" class="group-header-active"></div>
             <div id="matches-list">Ładowanie meczów...</div>
-            <div id="submit-container"></div>
+
+            <div id="submit-container">
+                <button id="submit-btn" onclick="submitCurrentGroup()" style="margin-top: 25px; font-size: 18px; box-shadow: 0 4px 10px rgba(1, 195, 141, 0.3);" disabled>
+                    Wypełnij wszystkie mecze tej rundy
+                </button>
+            </div>
         </div>
 
         <div class="card">
             <h2>📊 Szczegółowe Typy Graczy</h2>
+            
             <div class="table-filter-bar">
                 <button class="filter-btn active" id="filter-btn-pucharowa" onclick="setTableFilter('pucharowa')">Faza Pucharowa</button>
-                <button class="filter-btn" id="filter-btn-grupowa" onclick="setTableFilter('grupowa')">Faza Grupowa (Tabela)</button>
+                <button class="filter-btn" id="filter-btn-grupowa" onclick="setTableFilter('grupowa')">Faza Grupowa</button>
             </div>
+
             <button onclick="loadAllScores()" style="background:#2a3558; color:white; font-size:12px; padding:6px; margin-bottom:10px; width:auto;">🔄 Odśwież tabelę i punkty</button>
             <div class="table-container">
                 <table id="global-table">
@@ -138,94 +196,104 @@
     let currentTableFilter = "pucharowa"; 
 
     const teamFlags = {
-        "Meksyk": "🇲🇽", "RPA": "🇿🇦", "Korea Płd.": "🇰🇷", "Czechy": "🇨🇿", "Kanada": "🇨🇦", "Bośnia i Hercegowina": "🇧🇦", "Katar": "🇶🇦", "Szwajcaria": "🇨🇭",
-        "Brazylia": "🇧🇷", "Maroko": "🇲🇦", "Haiti": "🇭🇹", "Szkocja": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "USA": "🇺🇸", "Paragwaj": "🇵🇾", "Australia": "🇦🇺", "Turcja": "🇹🇷",
-        "Niemcy": "🇩🇪", "Curacao": "🇨🇼", "Curaçao": "🇨🇼", "WKS": "🇨🇮", "Ekwador": "🇪🇨", "Holandia": "🇳🇱", "Japonia": "🇯🇵", "Szwecja": "🇸🇪", "Tunezja": "🇹🇳",
-        "Belgia": "🇧🇪", "Egipt": "🇪🇬", "Iran": "🇮🇷", "Nowa Zelandia": "🇳🇿", "Hiszpania": "🇪🇸", "Republika Zielonego Przylądka": "🇨🇻", "Arabia Saudyjska": "🇸🇦", "Urugwaj": "🇺🇾",
-        "Francja": "🇫🇷", "Senegal": "🇸🇳", "Irak": "🇮🇶", "Norwegia": "🇳🇴", "Argentyna": "🇦🇷", "Algieria": "🇩🇿", "Austria": "🇦🇹", "Jordania": "🇯🇴",
-        "Portugalia": "🇵🇹", "DR Konga": "🇨🇩", "Uzbekistan": "🇺🇿", "Kolumbia": "🇨🇴", "Anglia": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "Chorwacja": "🇭🇷", "Ghana": "🇬🇭", "Panama": "🇵🇦",
-        "TBD": "❓", "Ćwierćfinał 1": "❓", "Ćwierćfinał 2": "❓", "Ćwierćfinał 3": "❓", "Ćwierćfinał 4": "❓", "Półfinał 1": "❓", "Półfinał 2": "❓", "Przegrany Półfinału 1": "❓", "Przegrany Półfinału 2": "❓", "Zwycięzca Półfinału 1": "❓", "Zwycięzca Półfinału 2": "❓"
+        "Meksyk": "🇲🇽", "RPA": "🇿🇦", "Korea Płd.": "🇰🇷", "Czechy": "🇨🇿", "Korea Południowa": "🇰🇷",
+        "Kanada": "🇨🇦", "Bośnia i Herc.": "🇧🇦", "Bośnia i Hercegowina": "🇧🇦", "Bośnia i Herceg.": "🇧🇦", "Bośnia": "🇧🇦", "Katar": "🇶🇦", "Szwajcaria": "🇨🇭",
+        "Brazylia": "🇧🇷", "Maroko": "🇲🇦", "Haiti": "🇭🇹", "Szkocja": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+        "USA": "🇺🇸", "Paragwaj": "🇵🇾", "Australia": "🇦🇺", "Turcja": "🇹🇷",
+        "Niemcy": "🇩🇪", "Curacao": "🇨🇼", "Curaçao": "🇨🇼", "WKS": "🇨🇮", "Ekwador": "🇪🇨",
+        "Holandia": "🇳🇱", "Japonia": "🇯🇵", "Szwecja": "🇸🇪", "Tunezja": "🇹🇳",
+        "Belgia": "🇧🇪", "Egipt": "🇪🇬", "Iran": "🇮🇷", "Nowa Zelandia": "🇳🇿", "Nowa Zel.": "🇳🇿",
+        "Hiszpania": "🇪🇸", "Rep. Ziel. Przyl.": "🇨🇻", "Rep. Zielonego Przyl.": "🇨🇻", "Rep. Z. Prz.": "🇨🇻", "Republika Zielonego Przylądka": "🇨🇻", "Zielony Przylądek": "🇨🇻", "Arabia Saud.": "🇸🇦", "Arabia Saudyjska": "🇸🇦", "Arabia S.": "🇸🇦", "Urugwaj": "🇺🇾",
+        "Francja": "🇫🇷", "Senegal": "🇸🇳", "Irak": "🇮🇶", "Norwegia": "🇳🇴",
+        "Argentyna": "🇦🇷", "Algieria": "🇩🇿", "Austria": "🇦🇹", "Jordania": "🇯🇴",
+        "Portugalia": "🇵🇹", "DR Kongo": "🇨🇩", "DR Konga": "🇨🇩", "Uzbekistan": "🇺🇿", "Kolumbia": "🇨🇴",
+        "Anglia": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "Chorwacja": "🇭🇷", "Ghana": "🇬🇭", "Panama": "🇵🇦",
+        "TBD": "❓", "Zwycięzca RPA/Kanada": "❓", "Zwycięzca Holandia/Maroko": "❓", "Zwycięzca Niemcy/Paragwaj": "❓", "Zwycięzca Francja/Szwecja": "❓",
+        "Zwycięzca Brazylia/Japonia": "❓", "Zwycięzca WKS/Norwegia": "❓", "Zwycięzca Meksyk/Ekwador": "❓", "Zwycięzca Anglia/DR Konga": "❓",
+        "Zwycięzca Portugalia/Chorwacja": "❓", "Zwycięzca Hiszpania/Austria": "❓", "Zwycięzca USA/Bośnia": "❓", "Zwycięzca Belgia/Senegal": "❓",
+        "Zwycięzca Argentyna/Zielony Przylądek": "❓", "Zwycięzca Australia/Egipt": "❓", "Zwycięzca Szwajcaria/Algieria": "❓", "Zwycięzca Kolumbia/Ghana": "❓",
+        "Mecz 1/8 finału (zachód)": "❓", "Ćwierćfinał 1": "❓", "Ćwierćfinał 2": "❓", "Ćwierćfinał 3": "❓", "Ćwierćfinał 4": "❓",
+        "Półfinał 1": "❓", "Półfinał 2": "❓", "Przegrany Półfinału 1": "❓", "Przegrany Półfinału 2": "❓", "Zwycięzca Półfinału 1": "❓", "Zwycięzca Półfinału 2": "❓"
     };
 
     const R32_LOCK_TIME = "2026-06-28T21:00:00";
 
-    // Pełna, bezpieczna baza meczów (Grupowe + Pucharowe)
     const allMatches = [
-        // FAZA GRUPOWA (Wyniki zapisane bezpiecznie w cudzysłowach jako stringi)
-        { id: "Mecz1", group: "Grupowa", t1: "Meksyk", t2: "RPA", score: "2:0" },
-        { id: "Mecz2", group: "Grupowa", t1: "Korea Płd.", t2: "Czechy", score: "0:2" },
-        { id: "Mecz3", group: "Grupowa", t1: "Kanada", t2: "Bośnia i Hercegowina", score: "2:0" },
-        { id: "Mecz4", group: "Grupowa", t1: "Katar", t2: "Szwajcaria", score: "0:3" },
-        { id: "Mecz5", group: "Grupowa", t1: "Brazylia", t2: "Maroko", score: "2:0" },
-        { id: "Mecz6", group: "Grupowa", t1: "Haiti", t2: "Szkocja", score: "1:2" },
-        { id: "Mecz7", group: "Grupowa", t1: "USA", t2: "Paragwaj", score: "1:1" },
-        { id: "Mecz8", group: "Grupowa", t1: "Australia", t2: "Turcja", score: "2:1" },
-        { id: "Mecz9", group: "Grupowa", t1: "Niemcy", t2: "Curacao", score: "3:0" },
-        { id: "Mecz10", group: "Grupowa", t1: "WKS", t2: "Ekwador", score: "2:2" },
-        { id: "Mecz11", group: "Grupowa", t1: "Holandia", t2: "Japonia", score: "1:1" },
-        { id: "Mecz12", group: "Grupowa", t1: "Szwecja", t2: "Tunezja", score: "2:1" },
-        { id: "Mecz13", group: "Grupowa", t1: "Belgia", t2: "Egipt", score: "2:1" },
-        { id: "Mecz14", group: "Grupowa", t1: "Iran", t2: "Nowa Zelandia", score: "2:0" },
-        { id: "Mecz15", group: "Grupowa", t1: "Hiszpania", t2: "Republika Zielonego Przylądka", score: "3:1" },
-        { id: "Mecz16", group: "Grupowa", t1: "Arabia Saudyjska", t2: "Urugwaj", score: "0:2" },
-        { id: "Mecz17", group: "Grupowa", t1: "Francja", t2: "Senegal", score: "2:0" },
-        { id: "Mecz18", group: "Grupowa", t1: "Irak", t2: "Norwegia", score: "1:3" },
-        { id: "Mecz19", group: "Grupowa", t1: "Argentyna", t2: "Algieria", score: "3:0" },
-        { id: "Mecz20", group: "Grupowa", t1: "Austria", t2: "Jordania", score: "2:0" },
-        { id: "Mecz21", group: "Grupowa", t1: "Portugalia", t2: "DR Konga", score: "2:0" },
-        { id: "Mecz22", group: "Grupowa", t1: "Uzbekistan", t2: "Kolumbia", score: "1:2" },
-        { id: "Mecz23", group: "Grupowa", t1: "Anglia", t2: "Chorwacja", score: "1:1" },
-        { id: "Mecz24", group: "Grupowa", t1: "Ghana", t2: "Panama", score: "2:1" },
-        { id: "Mecz25", group: "Grupowa", t1: "Meksyk", t2: "Korea Płd.", score: "2:1" },
-        { id: "Mecz26", group: "Grupowa", t1: "RPA", t2: "Czechy", score: "1:1" },
-        { id: "Mecz27", group: "Grupowa", t1: "Kanada", t2: "Katar", score: "3:0" },
-        { id: "Mecz28", group: "Grupowa", t1: "Bośnia i Hercegowina", t2: "Szwajcaria", score: "1:2" },
-        { id: "Mecz29", group: "Grupowa", t1: "Brazylia", t2: "Haiti", score: "4:0" },
-        { id: "Mecz30", group: "Grupowa", t1: "Maroko", t2: "Szkocja", score: "2:1" },
-        { id: "Mecz31", group: "Grupowa", t1: "USA", t2: "Australia", score: "2:0" },
-        { id: "Mecz32", group: "Grupowa", t1: "Paragwaj", t2: "Turcja", score: "1:0" },
-        { id: "Mecz33", group: "Grupowa", t1: "Niemcy", t2: "WKS", score: "1:1" },
-        { id: "Mecz34", group: "Grupowa", t1: "Curacao", t2: "Ekwador", score: "0:3" },
-        { id: "Mecz35", group: "Grupowa", t1: "Holandia", t2: "Szwecja", score: "2:0" },
-        { id: "Mecz36", group: "Grupowa", t1: "Japonia", t2: "Tunezja", score: "2:1" },
-        { id: "Mecz37", group: "Grupowa", t1: "Belgia", t2: "Iran", score: "2:0" },
-        { id: "Mecz38", group: "Grupowa", t1: "Egipt", t2: "Nowa Zelandia", score: "2:1" },
-        { id: "Mecz39", group: "Grupowa", t1: "Hiszpania", t2: "Arabia Saudyjska", score: "4:1" },
-        { id: "Mecz40", group: "Grupowa", t1: "Republika Zielonego Przylądka", t2: "Urugwaj", score: "1:2" },
-        { id: "Mecz41", group: "Grupowa", t1: "Francja", t2: "Irak", score: "3:0" },
-        { id: "Mecz42", group: "Grupowa", t1: "Senegal", t2: "Norwegia", score: "1:2" },
-        { id: "Mecz43", group: "Grupowa", t1: "Argentyna", t2: "Austria", score: "2:0" },
-        { id: "Mecz44", group: "Grupowa", t1: "Algieria", t2: "Jordania", score: "2:1" },
-        { id: "Mecz45", group: "Grupowa", t1: "Portugalia", t2: "Uzbekistan", score: "3:1" },
-        { id: "Mecz46", group: "Grupowa", t1: "DR Konga", t2: "Kolumbia", score: "1:2" },
-        { id: "Mecz47", group: "Grupowa", t1: "Anglia", t2: "Ghana", score: "2:0" },
-        { id: "Mecz48", group: "Grupowa", t1: "Chorwacja", t2: "Panama", score: "3:1" },
-        { id: "Mecz49", group: "Grupowa", t1: "Czechy", t2: "Meksyk", score: "1:2" },
-        { id: "Mecz50", group: "Grupowa", t1: "RPA", t2: "Korea Płd.", score: "2:1" },
-        { id: "Mecz51", group: "Grupowa", t1: "Szwajcaria", t2: "Kanada", score: "1:1" },
-        { id: "Mecz52", group: "Grupowa", t1: "Katar", t2: "Bośnia i Hercegowina", score: "1:2" },
-        { id: "Mecz53", group: "Grupowa", t1: "Szkocja", t2: "Brazylia", score: "0:3" },
-        { id: "Mecz54", group: "Grupowa", t1: "Maroko", t2: "Haiti", score: "3:1" },
-        { id: "Mecz55", group: "Grupowa", t1: "Turcja", t2: "USA", score: "1:2" },
-        { id: "Mecz56", group: "Grupowa", t1: "Australia", t2: "Paragwaj", score: "0:2" },
-        { id: "Mecz57", group: "Grupowa", t1: "Ekwador", t2: "Niemcy", score: "1:2" },
-        { id: "Mecz58", group: "Grupowa", t1: "WKS", t2: "Curacao", score: "3:1" },
-        { id: "Mecz59", group: "Grupowa", t1: "Tunezja", t2: "Holandia", score: "0:2" },
-        { id: "Mecz60", group: "Grupowa", t1: "Japonia", t2: "Szwecja", score: "2:1" },
-        { id: "Mecz61", group: "Grupowa", t1: "Nowa Zelandia", t2: "Belgia", score: "0:3" },
-        { id: "Mecz62", group: "Grupowa", t1: "Iran", t2: "Egipt", score: "1:2" },
-        { id: "Mecz63", group: "Grupowa", t1: "Urugwaj", t2: "Hiszpania", score: "1:1" },
-        { id: "Mecz64", group: "Grupowa", t1: "Arabia Saudyjska", t2: "Republika Zielonego Przylądka", score: "1:2" },
-        { id: "Mecz65", group: "Grupowa", t1: "Norwegia", t2: "Francja", score: "1:1" },
-        { id: "Mecz66", group: "Grupowa", t1: "Irak", t2: "Senegal", score: "0:2" },
-        { id: "Mecz67", group: "Grupowa", t1: "Jordania", t2: "Argentyna", score: "0:4" },
-        { id: "Mecz68", group: "Grupowa", t1: "Austria", t2: "Algieria", score: "2:1" },
-        { id: "Mecz69", group: "Grupowa", t1: "Kolumbia", t2: "Portugalia", score: "1:1" },
-        { id: "Mecz70", group: "Grupowa", t1: "Uzbekistan", t2: "DR Konga", score: "1:2" },
-        { id: "Mecz71", group: "Grupowa", t1: "Panama", t2: "Anglia", score: "0:3" },
-        { id: "Mecz72", group: "Grupowa", t1: "Ghana", t2: "Chorwacja", score: "1:2" },
+        // --- ARCHIWALNA FAZA GRUPOWA ---
+        { id: "Mecz1", group: "A", t1: "Meksyk", t2: "RPA", lock: "2026-06-11T21:00:00", score: "2:0" },
+        { id: "Mecz2", group: "A", t1: "Korea Płd.", t2: "Czechy", lock: "2026-06-12T04:00:00", score: "2:1" },
+        { id: "Mecz7", group: "B", t1: "Kanada", t2: "Bośnia i Herc.", lock: "2026-06-12T21:00:00", score: "1:1" },
+        { id: "Mecz19", group: "D", t1: "USA", t2: "Paragwaj", lock: "2026-06-13T03:00:00", score: "4:1" },
+        { id: "Mecz8", group: "B", t1: "Katar", t2: "Szwajcaria", lock: "2026-06-13T21:00:00", score: "1:1" },
+        { id: "Mecz13", group: "C", t1: "Brazylia", t2: "Maroko", lock: "2026-06-14T00:00:00", score: "1:1" },
+        { id: "Mecz14", group: "C", t1: "Haiti", t2: "Szkocja", lock: "2026-06-14T03:00:00", score: "0:1" },
+        { id: "Mecz20", group: "D", t1: "Australia", t2: "Turcja", lock: "2026-06-14T06:00:00", score: "2:0" },
+        { id: "Mecz25", group: "E", t1: "Niemcy", t2: "Curacao", lock: "2026-06-14T19:00:00", score: "7:1" },
+        { id: "Mecz31", group: "F", t1: "Holandia", t2: "Japonia", lock: "2026-06-14T22:00:00", score: "2:2" },
+        { id: "Mecz26", group: "E", t1: "WKS", t2: "Ekwador", lock: "2026-06-15T01:00:00", score: "1:0" },
+        { id: "Mecz32", group: "F", t1: "Szwecja", t2: "Tunezja", lock: "2026-06-15T04:00:00", score: "5:1" },
+        { id: "Mecz43", group: "H", t1: "Hiszpania", t2: "Rep. Ziel. Przyl.", lock: "2026-06-15T18:00:00", score: "0:0" },
+        { id: "Mecz37", group: "G", t1: "Belgia", t2: "Egipt", lock: "2026-06-15T21:00:00", score: "1:1" },
+        { id: "Mecz44", group: "H", t1: "Arabia Saud.", t2: "Urugwaj", lock: "2026-06-16T00:00:00", score: "1:1" },
+        { id: "Mecz38", group: "G", t1: "Iran", t2: "Nowa Zelandia", lock: "2026-06-16T03:00:00", score: "2:2" },
+        { id: "Mecz49", group: "I", t1: "Francja", t2: "Senegal", lock: "2026-06-16T21:00:00", score: "3:1" },
+        { id: "Mecz50", group: "I", t1: "Irak", t2: "Norwegia", lock: "2026-06-17T00:00:00", score: "1:4" },
+        { id: "Mecz55", group: "J", t1: "Argentyna", t2: "Algieria", lock: "2026-06-17T03:00:00", score: "3:0" },
+        { id: "Mecz56", group: "J", t1: "Austria", t2: "Jordania", lock: "2026-06-17T06:00:00", score: "3:1" },
+        { id: "Mecz61", group: "K", t1: "Portugalia", t2: "DR Kongo", lock: "2026-06-17T19:00:00", score: "1:1" },
+        { id: "Mecz67", group: "L", t1: "Anglia", t2: "Chorwacja", lock: "2026-06-17T22:00:00", score: "4:2" },
+        { id: "Mecz68", group: "L", t1: "Ghana", t2: "Panama", lock: "2026-06-18+01:00:00", score: "1:0" },
+        { id: "Mecz62", group: "K", t1: "Uzbekistan", t2: "Kolumbia", lock: "2026-06-18T04:00:00", score: "1:3" },
+        { id: "Mecz3", group: "A", t1: "Czechy", t2: "RPA", lock: "2026-06-18T18:00:00", score: "1:1" },
+        { id: "Mecz9", group: "B", t1: "Szwajcaria", t2: "Bośnia i Herc.", lock: "2026-06-18T21:00:00", score: "4:1" },
+        { id: "Mecz10", group: "B", t1: "Kanada", t2: "Katar", lock: "2026-06-19T00:00:00", score: "6:0" },
+        { id: "Mecz4", group: "A", t1: "Meksyk", t2: "Korea Płd.", lock: "2026-06-19T03:00:00", score: "1:0" },
+        { id: "Mecz21", group: "D", t1: "USA", t2: "Australia", lock: "2026-06-19T21:00:00", score: "2:0" },
+        { id: "Mecz15", group: "C", t1: "Szkocja", t2: "Maroko", lock: "2026-06-20T00:00:00", score: "0:1" },
+        { id: "Mecz16", group: "C", t1: "Brazylia", t2: "Haiti", lock: "2026-06-20T03:00:00", score: "3:0" },
+        { id: "Mecz22", group: "D", t1: "Turcja", t2: "Paragwaj", lock: "2026-06-20T06:00:00", score: "0:1" },
+        { id: "Mecz33", group: "F", t1: "Holandia", t2: "Szwecja", lock: "2026-06-20T19:00:00", score: "5:1" },
+        { id: "Mecz27", group: "E", t1: "Niemcy", t2: "WKS", lock: "2026-06-20T22:00:00", score: "2:1" },
+        { id: "Mecz28", group: "E", t1: "Ekwador", t2: "Curacao", lock: "2026-06-21T02:00:00", score: "0:0" },
+        { id: "Mecz34", group: "F", t1: "Tunezja", t2: "Japonia", lock: "2026-06-21T06:00:00", score: "0:4" },
+        { id: "Mecz45", group: "H", t1: "Hiszpania", t2: "Arabia Saud.", lock: "2026-06-21T18:00:00", score: "4:0" },
+        { id: "Mecz39", group: "G", t1: "Belgia", t2: "Iran", lock: "2026-06-21T21:00:00", score: "0:0" },
+        { id: "Mecz46", group: "H", t1: "Urugwaj", t2: "Rep. Ziel. Przyl.", lock: "2026-06-22T00:00:00", score: "2:2" },
+        { id: "Mecz40", group: "G", t1: "Nowa Zelandia", t2: "Egipt", lock: "2026-06-22T03:00:00", score: "1:3" },
+        { id: "Mecz57", group: "J", t1: "Argentyna", t2: "Austria", lock: "2026-06-22T19:00:00", score: "2:0" },
+        { id: "Mecz52", group: "I", t1: "Francja", t2: "Irak", lock: "2026-06-22T23:00:00", score: "3:0" },
+        { id: "Mecz51", group: "I", t1: "Norwegia", t2: "Senegal", lock: "2026-06-22T18:00:00", score: "3:2" },
+        { id: "Mecz58", group: "J", t1: "Jordania", t2: "Algieria", lock: "2026-06-23T05:00:00", score: "1:2" },
+        { id: "Mecz63", group: "K", t1: "Portugalia", t2: "Uzbekistan", lock: "2026-06-23T19:00:00", score: "5:0" },
+        { id: "Mecz69", group: "L", t1: "Anglia", t2: "Ghana", lock: "2026-06-23T22:00:00", score: "0:0" },
+        { id: "Mecz70", group: "L", t1: "Panama", t2: "Chorwacja", lock: "2026-06-24T01:00:00", score: "0:1" },
+        { id: "Mecz64", group: "K", t1: "Kolumbia", t2: "DR Kongo", lock: "2026-06-24T04:00:00", score: "1:0" },
+        { id: "Mecz11", group: "B", t1: "Szwajcaria", t2: "Kanada", lock: "2026-06-24T21:00:00", score: "2:1" },
+        { id: "Mecz12", group: "B", t1: "Bośnia i Herc.", t2: "Katar", lock: "2026-06-24T21:00:00", score: "3:1" },
+        { id: "Mecz18", group: "C", t1: "Maroko", t2: "Haiti", lock: "2026-06-25T00:00:00", score: "4:2" },
+        { id: "Mecz17", group: "C", t1: "Szkocja", t2: "Brazylia", lock: "2026-06-25T00:00:00", score: "0:3" },
+        { id: "Mecz6", group: "A", t1: "RPA", t2: "Korea Płd.", lock: "2026-06-25T03:00:00", score: "1:0" },
+        { id: "Mecz5", group: "A", t1: "Czechy", t2: "Meksyk", lock: "2026-06-25T03:00:00", score: "0:3" },
+        { id: "Mecz29", group: "E", t1: "Curacao", t2: "WKS", lock: "2026-06-25T22:00:00", score: "0:2" },
+        { id: "Mecz30", group: "E", t1: "Ekwador", t2: "Niemcy", lock: "2026-06-25T22:00:00", score: "2:1" },
+        { id: "Mecz35", group: "F", t1: "Japonia", t2: "Szwecja", lock: "2026-06-26T01:00:00", score: "1:1" },
+        { id: "Mecz36", group: "F", t1: "Tunezja", t2: "Holandia", lock: "2026-06-26T01:00:00", score: "1:3" },
+        { id: "Mecz24", group: "D", t1: "Paragwaj", t2: "Australia", lock: "2026-06-26T04:00:00", score: "0:0" },
+        { id: "Mecz23", group: "D", t1: "Turcja", t2: "USA", lock: "2026-06-26T04:00:00", score: "3:2" },
+        { id: "Mecz53", group: "I", t1: "Norwegia", t2: "Francja", lock: "2026-06-26T21:00:00", score: "1:4" },
+        { id: "Mecz54", group: "I", t1: "Senegal", t2: "Irak", lock: "2026-06-26T21:00:00", score: "5:0" },
+        { id: "Mecz47", group: "H", t1: "Rep. Ziel. Przyl.", t2: "Arabia Saud.", lock: "2026-06-27T02:00:00", score: "0:0" },
+        { id: "Mecz48", group: "H", t1: "Urugwaj", t2: "Hiszpania", lock: "2026-06-27T02:00:00", score: "0:1" },
+        { id: "Mecz41", group: "G", t1: "Egipt", t2: "Iran", lock: "2026-06-27T05:00:00", score: "1:1" },
+        { id: "Mecz42", group: "G", t1: "Nowa Zelandia", t2: "Belgia", lock: "2026-06-27T05:00:00", score: "1:5" },
+        { id: "Mecz72", group: "L", t1: "Chorwacja", t2: "Ghana", lock: "2026-06-27T23:00:00", score: "2:1" },
+        { id: "Mecz71", group: "L", t1: "Panama", t2: "Anglia", lock: "2026-06-27T23:00:00", score: "0:2" },
+        { id: "Mecz66", group: "K", t1: "DR Kongo", t2: "Uzbekistan", lock: "2026-06-28T01:30:00", score: "3:1" },
+        { id: "Mecz65", group: "K", t1: "Kolumbia", t2: "Portugalia", lock: "2026-06-28T01:30:00", score: "0:0" },
+        { id: "Mecz59", group: "J", t1: "Algieria", t2: "Austria", lock: "2026-06-28T04:00:00", score: "3:3" },
+        { id: "Mecz60", group: "J", t1: "Jordania", t2: "Argentyna", lock: "2026-06-28T04:00:00", score: "1:3" },
 
-        // FAZA PUCHAROWA
+        // --- FAZA 1/16 FINAŁU (ZAKOŃCZONA) ---
         { id: "Mecz73", group: "1/16", t1: "RPA", t2: "Kanada", lock: R32_LOCK_TIME, score: "0:1" },
         { id: "Mecz74", group: "1/16", t1: "Brazylia", t2: "Japonia", lock: R32_LOCK_TIME, score: "2:1" },
         { id: "Mecz75", group: "1/16", t1: "Niemcy", t2: "Paragwaj", lock: R32_LOCK_TIME, score: "1:1" },
@@ -243,6 +311,7 @@
         { id: "Mecz87", group: "1/16", t1: "Argentyna", t2: "Republika Zielonego Przylądka", lock: R32_LOCK_TIME, score: "3:2" },
         { id: "Mecz88", group: "1/16", t1: "Kolumbia", t2: "Ghana", lock: R32_LOCK_TIME, score: "1:0" },
 
+        // --- HARMONOGRAM FAZY 1/8 FINAŁU ---
         { id: "Mecz89", group: "1/8", t1: "Kanada", t2: "Maroko", lock: "2026-07-04T18:00:00", score: "", venue: "Houston" },
         { id: "Mecz90", group: "1/8", t1: "Paragwaj", t2: "Francja", lock: "2026-07-04T22:00:00", score: "", venue: "Filadelfia" },
         { id: "Mecz91", group: "1/8", t1: "Brazylia", t2: "Norwegia", lock: "2026-07-05T19:00:00", score: "", venue: "East Rutherford" },
@@ -252,38 +321,41 @@
         { id: "Mecz95", group: "1/8", t1: "Argentyna", t2: "Egipt", lock: "2026-07-07T17:00:00", score: "", venue: "Atlanta" },
         { id: "Mecz96", group: "1/8", t1: "Szwajcaria", t2: "Kolumbia", lock: "2026-07-07T21:00:00", score: "", venue: "Vancouver" },
 
+        // --- ĆWIERĆFINAŁY ---
         { id: "Mecz97", group: "1/4", t1: "Ćwierćfinał 1", t2: "TBD", lock: "2026-07-09T21:00:00", score: "", venue: "Boston" },
         { id: "Mecz98", group: "1/4", t1: "Ćwierćfinał 2", t2: "TBD", lock: "2026-07-10T23:00:00", score: "", venue: "Los Angeles" },
         { id: "Mecz99", group: "1/4", t1: "Ćwierćfinał 3", t2: "TBD", lock: "2026-07-11T19:00:00", score: "", venue: "Miami" },
         { id: "Mecz100", group: "1/4", t1: "Ćwierćfinał 4", t2: "TBD", lock: "2026-07-11T23:00:00", score: "", venue: "Kansas City" },
 
+        // --- PÓŁFINAŁY ---
         { id: "Mecz101", group: "1/2", t1: "Półfinał 1", t2: "TBD", lock: "2026-07-14T22:00:00", score: "", venue: "Dallas" },
         { id: "Mecz102", group: "1/2", t1: "Półfinał 2", t2: "TBD", lock: "2026-07-15T22:00:00", score: "", venue: "Atlanta" },
 
-        { id: "Mecz103", group: "FINALE", t1: "Przegrany Półfinału 1", t2: "Przegrany Półfinału 2", lock: "2026-07-18T22:00:00", score: "", venue: "Miami" },
-        { id: "Mecz104", group: "FINALE", t1: "Zwycięzca Półfinału 1", t2: "Zwycięzca Półfinału 2", lock: "2026-07-19T21:00:00", score: "", venue: "MetLife Stadium" }
+        // --- MECZ O 3. MIEJSCE ORAZ FINAŁ ---
+        { id: "Mecz103", group: "FINALE", t1: "Przegrany Półfinału 1", t2: "Przegrany Półfinału 2", lock: "2026-07-18T22:00:00", score: "", venue: "Miami (Mecz o 3. miejsce)" },
+        { id: "Mecz104", group: "FINALE", t1: "Zwycięzca Półfinału 1", t2: "Zwycięzca Półfinału 2", lock: "2026-07-19T21:00:00", score: "", venue: "MetLife Stadium (Wielki Finał)" }
     ];
 
-    const grupoweKeys = [];
-    for(let i=1; i<=72; i++) { grupoweKeys.push(`mecz${i}`); }
-
+    // Funkcja pomocnicza sprawdzająca, czy dana runda została już w pełni rozegrana w rzeczywistości
     function isPreviousStageFinished(groupName) {
-        if (groupName === "Grupowa") return true;
         const stageMatches = allMatches.filter(m => m.group === groupName);
         if (stageMatches.length === 0) return true;
         return stageMatches.every(m => m.score !== undefined && m.score !== null && m.score.trim() !== "");
     }
 
+    // Wyznacza indeks fazy, która powinna być aktualnie aktywna do typowania
     function getActivePredictionGroupIndex() {
         for (let i = 0; i < groupsOrder.length; i++) {
-            if (!isPreviousStageFinished(groupsOrder[i])) return i; 
+            if (!isPreviousStageFinished(groupsOrder[i])) {
+                return i; // Zwróć pierwszą fazę, w której brakuje jeszcze oficjalnych wyników
+            }
         }
-        return groupsOrder.length - 1; 
+        return groupsOrder.length - 1; // Jeśli wszystko uzupełnione, domyślnie ostatnia
     }
 
     function getFlagAnd3LetterCode(teamName) {
         if (!teamName) return "???";
-        if (teamName.startsWith("Zwycięzca") || teamName.startsWith("Mecz") || teamName.startsWith("Ćwierć") || teamName.startsWith("Pół") || teamName.startsWith("Przegrany") || teamName === "TBD") {
+        if (teamName.startsWith("Zwycięzca") || teamName.startsWith("Mecz") || teamName.startsWith("Ćwierć") || teamName.startsWith("Pół") || teamName.startsWith("Przegrany")) {
             return teamName;
         }
         const flag = teamFlags[teamName] || "";
@@ -291,7 +363,9 @@
     }
 
     function refreshTwemoji() {
-        if (window.twemoji) { twemoji.parse(document.body, { folder: 'svg', ext: '.svg' }); }
+        if (window.twemoji) {
+            twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
+        }
     }
 
     function isGroupSubmittedByPlayer(groupLetter) {
@@ -305,7 +379,10 @@
         } catch (e) {
             console.error("Błąd ładowania bazy przy starcie:", e);
         }
+
+        // Automatyczne ustawienie aktualnej fazy do typowania na podstawie wpisanych oficjalnych wyników
         currentGroupIndex = getActivePredictionGroupIndex();
+
         document.getElementById('loading-screen').classList.add('hidden');
         const savedNick = localStorage.getItem('typerNick');
         if (savedNick) { 
@@ -322,6 +399,7 @@
         const nickInput = document.getElementById('nick-input');
         const nick = nickInput.value.trim();
         if (nick.length < 3) return alert('Nick musi mieć min. 3 znaki!');
+
         localStorage.setItem('typerNick', nick);
         document.getElementById('login-screen').classList.add('hidden');
         showApp(nick);
@@ -330,6 +408,7 @@
     function showApp(nick) {
         document.getElementById('app-screen').classList.remove('hidden');
         document.getElementById('user-display').innerText = nick;
+        
         fillLocalDraftFromDatabase(nick);
         renderProgressBar();
         renderActiveGroup();
@@ -342,6 +421,7 @@
             groupsOrder.forEach(g => {
                 const groupMatches = allMatches.filter(m => m.group === g);
                 let hasAtLeastOnePrediction = false;
+
                 groupMatches.forEach(m => {
                     const matchKey = m.id.toLowerCase();
                     const score = userRow[matchKey]; 
@@ -352,6 +432,7 @@
                         hasAtLeastOnePrediction = true;
                     }
                 });
+
                 if (hasAtLeastOnePrediction) {
                     localStorage.setItem(`submitted_group_${g.toLowerCase()}_${nick.toLowerCase()}`, "true");
                 }
@@ -362,14 +443,22 @@
     function renderProgressBar() {
         const bar = document.getElementById('steps-bar');
         bar.innerHTML = "";
+        
         groupsOrder.forEach((g, idx) => {
             const span = document.createElement('span');
             const isDone = isGroupSubmittedByPlayer(g);
-            let isLockedWorkflow = idx > 0 ? !isPreviousStageFinished(groupsOrder[idx - 1]) : false;
+            
+            // Warunek odblokowania: faza jest dostępna, jeśli jej poprzedniczka ma komplet wyników wpisanych w tabeli `allMatches`
+            let isLockedWorkflow = false;
+            if (idx > 0) {
+                const prevGroupName = groupsOrder[idx - 1];
+                isLockedWorkflow = !isPreviousStageFinished(prevGroupName);
+            }
 
             if(isLockedWorkflow) {
                 span.className = `progress-step step-locked`;
                 span.innerText = g;
+                span.onclick = null; 
             } else {
                 span.className = `progress-step ${idx === currentGroupIndex ? 'active' : ''}`;
                 span.innerText = isDone ? `${g} ✓` : g; 
@@ -380,7 +469,11 @@
     }
 
     function changeGroup(targetIndex) {
-        if (targetIndex > 0 && !isPreviousStageFinished(groupsOrder[targetIndex - 1])) return;
+        if (targetIndex > 0) {
+            const prevGroupName = groupsOrder[targetIndex - 1];
+            if (!isPreviousStageFinished(prevGroupName)) return; 
+        }
+
         saveCurrentInputsToDraft();
         currentGroupIndex = targetIndex;
         renderProgressBar();
@@ -390,10 +483,12 @@
     function saveCurrentInputsToDraft() {
         const currentLetter = groupsOrder[currentGroupIndex];
         if (isGroupSubmittedByPlayer(currentLetter)) return;
+
         const rows = document.querySelectorAll('.match-row');
         rows.forEach(row => {
             const id = row.getAttribute('data-id');
-            if (row.getAttribute('data-locked') !== "true") {
+            const isLocked = row.getAttribute('data-locked') === "true";
+            if (!isLocked) {
                 const homeInput = row.querySelector('.home-team');
                 const awayInput = row.querySelector('.away-team');
                 if(homeInput && awayInput) {
@@ -407,16 +502,28 @@
     function renderActiveGroup() {
         const currentLetter = groupsOrder[currentGroupIndex];
         document.getElementById('group-title').innerText = `🏆 FAZA PUCHAROWA — RUNDA ${currentLetter}`;
+        
         const container = document.getElementById('matches-list');
         container.innerHTML = "";
         const now = new Date();
         const groupMatches = allMatches.filter(m => m.group === currentLetter);
         const isGroupPermanentlyLocked = isGroupSubmittedByPlayer(currentLetter);
-        let isRundeLockedByWorkflow = currentGroupIndex > 0 ? !isPreviousStageFinished(groupsOrder[currentGroupIndex - 1]) : false;
+
+        let isRundeLockedByWorkflow = false;
+        if (currentGroupIndex > 0) {
+            const prevGroupName = groupsOrder[currentGroupIndex - 1];
+            isRundeLockedByWorkflow = !isPreviousStageFinished(prevGroupName);
+        }
+
+        if(groupMatches.length === 0) {
+            container.innerHTML = "<p style='text-align:center; color:#8a99ad;'>Brak meczów.</p>";
+            return;
+        }
 
         groupMatches.forEach((match, index) => {
             const lockTime = new Date(match.lock);
             const isLocked = (now >= lockTime) || isGroupPermanentlyLocked || isRundeLockedByWorkflow;
+
             const div = document.createElement('div');
             div.className = "match-row";
             div.setAttribute('data-id', match.id);
@@ -424,15 +531,22 @@
             
             const nextMatch = groupMatches[index + 1];
             const nextMatchId = nextMatch ? nextMatch.id : null;
+
             const savedHome = localDraftScores[`home-${match.id}`] || "";
             const savedAway = localDraftScores[`away-${match.id}`] || "";
 
-            let officialResultText = match.score ? ` <b style="color:var(--primary)">[Wynik: ${match.score}]</b>` : "";
+            const f1 = teamFlags[match.t1] || "";
+            const f2 = teamFlags[match.t2] || "";
+
+            let officialResultText = "";
+            if(match.score && match.score !== "") {
+                officialResultText = ` <b style="color:var(--primary)">[Wynik: ${match.score}]</b>`;
+            }
+
             let venueText = match.venue ? ` | 📍 ${match.venue}` : "";
             let statusMessage = '⏰ Mecz: ' + match.lock.replace('T', ' ').substring(0, 16) + venueText;
-
             if (isRundeLockedByWorkflow) {
-                statusMessage = '<span class="locked-text">🔒 Zablokowane (Czekamy na poprzednią fazę)</span>';
+                statusMessage = '<span class="locked-text">🔒 Zablokowane (Czekamy na oficjalne wyniki poprzedniej fazy)</span>';
             } else if (now >= lockTime) {
                 statusMessage = '<span class="locked-text">🔒 ZABLOKOWANY (Czas minął)</span>';
             } else if (isGroupPermanentlyLocked) {
@@ -441,7 +555,7 @@
 
             div.innerHTML = `
                 <div class="match-info">
-                    <span class="match-teams">${getFlagAnd3LetterCode(match.t1)} - ${getFlagAnd3LetterCode(match.t2)} ${officialResultText}</span>
+                    <span class="match-teams">${f1} ${match.t1} - ${f2} ${match.t2} ${officialResultText}</span>
                     <span class="match-date">${statusMessage}</span>
                 </div>
                 <div class="score-inputs">
@@ -452,6 +566,7 @@
             `;
             container.appendChild(div);
         });
+
         validateGroupCompletion();
         refreshTwemoji(); 
     }
@@ -481,32 +596,40 @@
         const submitContainer = document.getElementById('submit-container');
 
         if (isGroupSubmittedByPlayer(currentLetter)) {
-            submitContainer.innerHTML = `<div class="success-box">⭐ Ta runda została zapisana!</div>`;
-            return;
-        }
-        if (currentGroupIndex > 0 && !isPreviousStageFinished(groupsOrder[currentGroupIndex - 1])) {
-            submitContainer.innerHTML = `<div class="success-box" style="color:var(--danger); border-color:var(--danger);">🔒 Czekamy na mecze poprzedniej fazy.</div>`;
+            submitContainer.innerHTML = `<div class="success-box">⭐ Ta runda została już przez Ciebie zatwierdzona i zapisana!</div>`;
             return;
         }
 
-        submitContainer.innerHTML = `<button id="submit-btn" onclick="submitCurrentGroup()" style="margin-top:25px; font-size:18px;" disabled>Wypełnij wszystkie mecze</button>`;
+        if (currentGroupIndex > 0 && !isPreviousStageFinished(groupsOrder[currentGroupIndex - 1])) {
+            submitContainer.innerHTML = `<div class="success-box" style="color:var(--danger); border-color:var(--danger);">🔒 Ta runda otworzy się automatycznie po zakończeniu wszystkich meczów poprzedniej fazy.</div>`;
+            return;
+        }
+
+        submitContainer.innerHTML = `
+            <button id="submit-btn" onclick="submitCurrentGroup()" style="margin-top: 25px; font-size: 18px; box-shadow: 0 4px 10px rgba(1, 195, 141, 0.3);" disabled>
+                Wypełnij wszystkie mecze tej rundy
+            </button>
+        `;
         const rows = document.querySelectorAll('.match-row');
         let allFilled = true;
         rows.forEach(row => {
-            if (row.getAttribute('data-locked') !== "true") {
+            const isLocked = row.getAttribute('data-locked') === "true";
+            if (!isLocked) {
                 const homeInput = row.querySelector('.home-team');
                 const awayInput = row.querySelector('.away-team');
-                if (homeInput && awayInput && (homeInput.value === "" || awayInput.value === "")) allFilled = false;
+                if (homeInput && awayInput && (homeInput.value === "" || awayInput.value === "")) {
+                    allFilled = false;
+                }
             }
         });
         const btn = document.getElementById('submit-btn');
         if (btn) {
             if (allFilled) {
                 btn.removeAttribute('disabled');
-                btn.innerText = `💾 Zapisz Rundę: ${groupsOrder[currentGroupIndex]}`;
+                btn.innerText = currentGroupIndex === groupsOrder.length - 1 ? "💾 Zapisz i Zakończ Typowanie!" : `💾 Zapisz i przejdź do Rund: ${groupsOrder[currentGroupIndex + 1]}`;
             } else {
                 btn.setAttribute('disabled', 'true');
-                btn.innerText = "Wpisz wszystkie otwarte wyniki, aby zapisać";
+                btn.innerText = "Wpisz wszystkie otwarte wyniki tej rundy, aby zapisać";
             }
         }
     }
@@ -514,34 +637,58 @@
     async function submitCurrentGroup() {
         const currentLetter = groupsOrder[currentGroupIndex];
         const nick = localStorage.getItem('typerNick');
+
         if (isGroupSubmittedByPlayer(currentLetter)) return;
+
         saveCurrentInputsToDraft();
 
         const updateData = { "gracz": nick };
         allMatches.forEach(m => {
+            const matchKey = m.id.toLowerCase();
             const homeVal = localDraftScores[`home-${m.id}`];
             const awayVal = localDraftScores[`away-${m.id}`];
             if (homeVal !== undefined && awayVal !== undefined && homeVal !== "" && awayVal !== "") {
-                updateData[m.id.toLowerCase()] = `${homeVal}:${awayVal}`;
+                updateData[matchKey] = `${homeVal}:${awayVal}`;
             }
         });
         const btn = document.getElementById('submit-btn');
+
         try {
-            if (btn) { btn.setAttribute('disabled', 'true'); btn.innerText = "Zapisywanie..."; }
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(updateData) });
+            if (btn) {
+                btn.setAttribute('disabled', 'true');
+                btn.innerText = "Wysyłanie do bazy...";
+            }
+
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify(updateData)
+            });
             const responseData = await res.json();
-            if (responseData.status === "error") throw new Error(responseData.message);
+
+            if (responseData.status === "error") throw new Error(responseData.message || "Błąd bazy danych");
 
             localStorage.setItem(`submitted_group_${currentLetter.toLowerCase()}_${nick.toLowerCase()}`, "true");
-            let idxU = existingDatabaseRows.findIndex(r => r.gracz && r.gracz.toLowerCase() === nick.toLowerCase());
-            if(idxU !== -1) Object.assign(existingDatabaseRows[idxU], updateData); else existingDatabaseRows.push(updateData);
+            const indexToUpdate = existingDatabaseRows.findIndex(r => r.gracz && r.gracz.toLowerCase() === nick.toLowerCase());
+            if(indexToUpdate !== -1) {
+                Object.assign(existingDatabaseRows[indexToUpdate], updateData);
+            } else {
+                existingDatabaseRows.push(updateData);
+            }
 
-            alert(`Runda ${currentLetter} zapisana! 🚀`);
-            if (currentGroupIndex < groupsOrder.length - 1 && isPreviousStageFinished(groupsOrder[currentGroupIndex])) currentGroupIndex++;
-            renderProgressBar(); renderActiveGroup(); loadAllScores();
+            alert(`Runda ${groupsOrder[currentGroupIndex]} została pomyślnie zapisana! 🚀`);
+            
+            // Przejdź dalej tylko jeśli kolejna faza jest już dostępna w strukturze wyników
+            if (currentGroupIndex < groupsOrder.length - 1 && isPreviousStageFinished(groupsOrder[currentGroupIndex])) {
+                currentGroupIndex++;
+            }
+            
+            renderProgressBar(); renderActiveGroup(); 
+            try { await loadAllScores(); } catch(e){}
             window.scrollTo({ top: 0, behavior: 'smooth' });
+
         } catch (error) {
-            alert('❌ Błąd zapisu: ' + error.message);
+            console.error(error);
+            alert('❌ Błąd zapisu! Dane NIE trafiły do bazy danych. Powód: ' + error.message);
             if (btn) btn.removeAttribute('disabled');
             validateGroupCompletion();
         }
@@ -551,26 +698,29 @@
         currentTableFilter = filterValue;
         document.getElementById('filter-btn-pucharowa').classList.remove('active');
         document.getElementById('filter-btn-grupowa').classList.remove('active');
-        document.getElementById(`filter-btn-${filterValue}`).classList.add('active');
+        
+        if (filterValue === 'pucharowa') {
+            document.getElementById('filter-btn-pucharowa').classList.add('active');
+        } else {
+            document.getElementById('filter-btn-grupowa').classList.add('active');
+        }
+        
         buildGlobalTableUI();
     }
 
-    function evaluatePrediction(playerPrediction, officialResult, stageName) {
+    function evaluatePrediction(playerPrediction, officialResult) {
         if (!officialResult || officialResult === "" || !playerPrediction || playerPrediction === "-" || !playerPrediction.includes(":")) {
             return { points: 0, cssClass: "", type: "none" };
         }
-        let exactPoints = 45, trendPoints = 30;
-        if (stageName === "1/16") { exactPoints = 90; trendPoints = 60; }
-        else if (stageName === "1/8") { exactPoints = 135; trendPoints = 90; }
-        else if (stageName === "1/4") { exactPoints = 180; trendPoints = 120; }
-        else if (stageName === "1/2") { exactPoints = 225; trendPoints = 150; }
-        else if (stageName === "FINALE") { exactPoints = 270; trendPoints = 180; }
-
-        if (playerPrediction.trim() === officialResult.trim()) return { points: exactPoints, cssClass: "cell-exact", type: "exact" };
+        if (playerPrediction.trim() === officialResult.trim()) {
+            return { points: 45, cssClass: "cell-exact", type: "exact" };
+        }
         const [pHome, pAway] = playerPrediction.split(":").map(Number);
         const [oHome, oAway] = officialResult.split(":").map(Number);
-        if ((pHome > pAway && oHome > oAway) || (pHome < pAway && oHome < oAway) || (pHome === pAway && oHome === oAway)) {
-            return { points: trendPoints, cssClass: "cell-trend", type: "trend" };
+        const playerTrend = pHome > pAway ? 1 : (pHome < pAway ? -1 : 0);
+        const officialTrend = oHome > oAway ? 1 : (oHome < oAway ? -1 : 0);
+        if (playerTrend === officialTrend) {
+            return { points: 30, cssClass: "cell-trend", type: "trend" };
         }
         return { points: 0, cssClass: "cell-miss", type: "miss" };
     }
@@ -588,87 +738,97 @@
         const leaderboardBody = document.getElementById('leaderboard-body');
         const loggedInUser = localStorage.getItem('typerNick') || "";
         
+        let filteredMatches = [];
+        if (currentTableFilter === "grupowa") {
+            filteredMatches = allMatches.filter(m => !["1/16", "1/8", "1/4", "1/2", "FINALE"].includes(m.group));
+        } else {
+            filteredMatches = allMatches.filter(m => ["1/16", "1/8", "1/4", "1/2", "FINALE"].includes(m.group));
+        }
+
         thead.innerHTML = "";
         const trHead = document.createElement('tr');
         trHead.innerHTML = "<th style='position:sticky; left:0; background:#1a2238; z-index:3;'>Gracz</th>";
         
-        if (currentTableFilter === "grupowa") {
-            for(let i=1; i<=72; i++) { 
-                const mG = allMatches.find(m => m.id === `Mecz${i}`);
-                const resSub = (mG && mG.score) ? `<br><span style="color:#01c38d; font-size:10px;">(${mG.score})</span>` : '';
-                trHead.innerHTML += `<th>Mecz ${i}${resSub}</th>`; 
-            }
-        } else {
-            allMatches.filter(m => m.group !== "Grupowa").forEach(m => {
-                const resSub = m.score ? `<br><span style="color:#01c38d; font-size:10px;">(${m.score})</span>` : '';
-                trHead.innerHTML += `<th><div class="th-match-header" style="flex-direction:column;"><div>${getFlagAnd3LetterCode(m.t1)} - ${getFlagAnd3LetterCode(m.t2)}</div>${resSub}</div></th>`;
-            });
-        }
+        filteredMatches.forEach(m => {
+            const homeFormat = getFlagAnd3LetterCode(m.t1);
+            const awayFormat = getFlagAnd3LetterCode(m.t2);
+            const resultSub = m.score ? `<br><span style="color:#01c38d; font-size:10px;">(${m.score})</span>` : '';
+            
+            trHead.innerHTML += `
+                <th>
+                    <div class="th-match-header" style="flex-direction:column; padding: 4px 0;">
+                        <div>${homeFormat} - ${awayFormat}</div>
+                        ${resultSub}
+                    </div>
+                </th>`;
+        });
         thead.appendChild(trHead);
+
+        let playersLeaderboard = [];
         tbody.innerHTML = "";
 
         if (!Array.isArray(existingDatabaseRows) || existingDatabaseRows.length === 0) {
-            leaderboardBody.innerHTML = "<tr><td colspan='3'>Brak danych...</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='100'>Brak wpisów w bazie danych.</td></tr>";
+            leaderboardBody.innerHTML = "<tr><td colspan='3'>Brak danych do rankingu.</td></tr>";
             return;
         }
 
         const loggedInUserRow = existingDatabaseRows.find(r => r.gracz && r.gracz.toLowerCase() === loggedInUser.toLowerCase());
-        let playersLeaderboard = [];
 
         existingDatabaseRows.forEach(row => {
             if (!row.gracz) return;
             let totalPoints = 0, countExact = 0, countTrend = 0;
+            const tr = document.createElement('tr');
+            let rowHtml = `<td style="font-weight:bold; color:#01c38d; position:sticky; left:0; background:#131927; z-index:1;">${row.gracz}</td>`;
             
-            // Podliczanie punktów z CAŁEGO turnieju (Grupowa + Pucharowa)
             allMatches.forEach(m => {
-                const val = row[m.id.toLowerCase()];
-                const evaluation = evaluatePrediction(val, m.score, m.group);
+                const matchKey = m.id.toLowerCase();
+                const playerPrediction = row[matchKey] || '-';
+                const evaluation = evaluatePrediction(playerPrediction, m.score);
                 totalPoints += evaluation.points;
                 if (evaluation.type === "exact") countExact++;
                 if (evaluation.type === "trend") countTrend++;
             });
 
-            const tr = document.createElement('tr');
-            let rowHtml = `<td style="font-weight:bold; color:#01c38d; position:sticky; left:0; background:#131927; z-index:1;">${row.gracz}</td>`;
-            
-            if (currentTableFilter === "grupowa") {
-                grupoweKeys.forEach(k => {
-                    let val = row[k] || "-";
-                    const mId = k.charAt(0).toUpperCase() + k.slice(1);
-                    const mG = allMatches.find(m => m.id === mId);
-                    const ev = evaluatePrediction(val, mG ? mG.score : "", "Grupowa");
-                    let css = ev.cssClass;
-                    if (row.gracz.toLowerCase() !== loggedInUser.toLowerCase() && (!loggedInUserRow || !loggedInUserRow[k])) {
-                        val = "🔒 Ukryte"; css = "";
+            filteredMatches.forEach(m => {
+                const matchKey = m.id.toLowerCase();
+                const playerPrediction = row[matchKey] || '-';
+                const evaluation = evaluatePrediction(playerPrediction, m.score);
+
+                let cellTextToShow = playerPrediction;
+                let finalCssClass = evaluation.cssClass;
+
+                if (row.gracz.toLowerCase() !== loggedInUser.toLowerCase()) {
+                    const loggedInUserPrediction = loggedInUserRow ? loggedInUserRow[matchKey] : "";
+                    const hasLoggedInUserPredicted = loggedInUserPrediction && loggedInUserPrediction.includes(":");
+
+                    if (!hasLoggedInUserPredicted) {
+                        cellTextToShow = "🔒 Ukryte";
+                        finalCssClass = "";
                     }
-                    rowHtml += `<td class="${css}">${val}</td>`;
-                });
-            } else {
-                allMatches.filter(m => m.group !== "Grupowa").forEach(m => {
-                    let val = row[m.id.toLowerCase()] || "-";
-                    const ev = evaluatePrediction(val, m.score, m.group);
-                    let css = ev.cssClass;
-                    if (row.gracz.toLowerCase() !== loggedInUser.toLowerCase() && (!loggedInUserRow || !loggedInUserRow[m.id.toLowerCase()])) {
-                        val = "🔒 Ukryte"; css = "";
-                    }
-                    rowHtml += `<td class="${css}">${val}</td>`;
-                });
-            }
-            tr.innerHTML = rowHtml; tbody.appendChild(tr);
+                }
+
+                rowHtml += `<td class="${finalCssClass}">${cellTextToShow}</td>`;
+            });
             
-            let finalScore = row.punkty ? Number(row.punkty) : totalPoints;
-            playersLeaderboard.push({ name: row.gracz, points: finalScore, exacts: countExact, trends: countTrend });
+            tr.innerHTML = rowHtml;
+            tbody.appendChild(tr);
+            playersLeaderboard.push({ name: row.gracz, points: totalPoints, exacts: countExact, trends: countTrend });
         });
 
-        playersLeaderboard.sort((a, b) => b.points - a.points);
+        playersLeaderboard.sort((a, b) => b.points !== a.points ? b.points - a.points : b.exacts - a.exacts);
         leaderboardBody.innerHTML = "";
-        playersLeaderboard.forEach((p, idx) => {
-            leaderboardBody.innerHTML += `
-                <tr class="leaderboard-row">
-                    <td><span class="rank-badge">${idx + 1}</span></td>
-                    <td style="text-align:left; padding-left:15px; font-weight:bold; color:#fff;">${p.name} <span class="stats-span">(🟢 x${p.exacts}, 🟡 x${p.trends})</span></td>
-                    <td style="font-weight:bold; color:var(--primary); font-size:16px;">${p.points} pkt</td>
-                </tr>`;
+        playersLeaderboard.forEach((player, index) => {
+            const trRank = document.createElement('tr');
+            trRank.className = "leaderboard-row";
+            trRank.innerHTML = `
+                <td><span class="rank-badge">${index + 1}</span></td>
+                <td style="text-align: left; padding-left: 15px; font-weight: bold; color: #fff;">
+                    ${player.name} <span class="stats-span">(🟢 x${player.exacts}, 🟡 x${player.trends})</span>
+                </td>
+                <td style="font-weight: bold; color: var(--primary); font-size: 16px;">${player.points} pkt</td>
+            `;
+            leaderboardBody.appendChild(trRank);
         });
         refreshTwemoji(); 
     }
