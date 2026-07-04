@@ -336,21 +336,19 @@
         { id: "Mecz104", group: "FINALE", t1: "Zwycięzca Półfinału 1", t2: "Zwycięzca Półfinału 2", lock: "2026-07-19T21:00:00", score: "", venue: "MetLife Stadium (Wielki Finał)" }
     ];
 
-    // Funkcja pomocnicza sprawdzająca, czy dana runda została już w pełni rozegrana w rzeczywistości
     function isPreviousStageFinished(groupName) {
         const stageMatches = allMatches.filter(m => m.group === groupName);
         if (stageMatches.length === 0) return true;
         return stageMatches.every(m => m.score !== undefined && m.score !== null && m.score.trim() !== "");
     }
 
-    // Wyznacza indeks fazy, która powinna być aktualnie aktywna do typowania
     function getActivePredictionGroupIndex() {
         for (let i = 0; i < groupsOrder.length; i++) {
             if (!isPreviousStageFinished(groupsOrder[i])) {
-                return i; // Zwróć pierwszą fazę, w której brakuje jeszcze oficjalnych wyników
+                return i; 
             }
         }
-        return groupsOrder.length - 1; // Jeśli wszystko uzupełnione, domyślnie ostatnia
+        return groupsOrder.length - 1; 
     }
 
     function getFlagAnd3LetterCode(teamName) {
@@ -380,7 +378,6 @@
             console.error("Błąd ładowania bazy przy starcie:", e);
         }
 
-        // Automatyczne ustawienie aktualnej fazy do typowania na podstawie wpisanych oficjalnych wyników
         currentGroupIndex = getActivePredictionGroupIndex();
 
         document.getElementById('loading-screen').classList.add('hidden');
@@ -448,7 +445,6 @@
             const span = document.createElement('span');
             const isDone = isGroupSubmittedByPlayer(g);
             
-            // Warunek odblokowania: faza jest dostępna, jeśli jej poprzedniczka ma komplet wyników wpisanych w tabeli `allMatches`
             let isLockedWorkflow = false;
             if (idx > 0) {
                 const prevGroupName = groupsOrder[idx - 1];
@@ -677,7 +673,6 @@
 
             alert(`Runda ${groupsOrder[currentGroupIndex]} została pomyślnie zapisana! 🚀`);
             
-            // Przejdź dalej tylko jeśli kolejna faza jest już dostępna w strukturze wyników
             if (currentGroupIndex < groupsOrder.length - 1 && isPreviousStageFinished(groupsOrder[currentGroupIndex])) {
                 currentGroupIndex++;
             }
@@ -708,20 +703,46 @@
         buildGlobalTableUI();
     }
 
-    function evaluatePrediction(playerPrediction, officialResult) {
+    function evaluatePrediction(playerPrediction, officialResult, stageName) {
         if (!officialResult || officialResult === "" || !playerPrediction || playerPrediction === "-" || !playerPrediction.includes(":")) {
             return { points: 0, cssClass: "", type: "none" };
         }
-        if (playerPrediction.trim() === officialResult.trim()) {
-            return { points: 45, cssClass: "cell-exact", type: "exact" };
+
+        // Domyślne stawki punktowe dla Fazy Grupowej
+        let exactPoints = 45;
+        let trendPoints = 30;
+
+        // Podmiana stawek punktowych dla konkretnych faz pucharowych zgodnie z wytycznymi
+        if (stageName === "1/16") {
+            exactPoints = 90;
+            trendPoints = 60;
+        } else if (stageName === "1/8") {
+            exactPoints = 135;
+            trendPoints = 90;
+        } else if (stageName === "1/4") {
+            exactPoints = 180;
+            trendPoints = 120;
+        } else if (stageName === "1/2") {
+            exactPoints = 225;
+            trendPoints = 150;
+        } else if (stageName === "FINALE") {
+            exactPoints = 270;
+            trendPoints = 180;
         }
+
+        if (playerPrediction.trim() === officialResult.trim()) {
+            return { points: exactPoints, cssClass: "cell-exact", type: "exact" };
+        }
+
         const [pHome, pAway] = playerPrediction.split(":").map(Number);
         const [oHome, oAway] = officialResult.split(":").map(Number);
         const playerTrend = pHome > pAway ? 1 : (pHome < pAway ? -1 : 0);
         const officialTrend = oHome > oAway ? 1 : (oHome < oAway ? -1 : 0);
+
         if (playerTrend === officialTrend) {
-            return { points: 30, cssClass: "cell-trend", type: "trend" };
+            return { points: trendPoints, cssClass: "cell-trend", type: "trend" };
         }
+
         return { points: 0, cssClass: "cell-miss", type: "miss" };
     }
 
@@ -784,7 +805,7 @@
             allMatches.forEach(m => {
                 const matchKey = m.id.toLowerCase();
                 const playerPrediction = row[matchKey] || '-';
-                const evaluation = evaluatePrediction(playerPrediction, m.score);
+                const evaluation = evaluatePrediction(playerPrediction, m.score, m.group);
                 totalPoints += evaluation.points;
                 if (evaluation.type === "exact") countExact++;
                 if (evaluation.type === "trend") countTrend++;
@@ -793,7 +814,7 @@
             filteredMatches.forEach(m => {
                 const matchKey = m.id.toLowerCase();
                 const playerPrediction = row[matchKey] || '-';
-                const evaluation = evaluatePrediction(playerPrediction, m.score);
+                const evaluation = evaluatePrediction(playerPrediction, m.score, m.group);
 
                 let cellTextToShow = playerPrediction;
                 let finalCssClass = evaluation.cssClass;
