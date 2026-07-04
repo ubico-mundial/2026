@@ -128,7 +128,6 @@
 </div>
 
 <script>
-    // UPEWNIJ SIĘ, ŻE PONIŻSZY LINK JEST TWÓJ WŁASNY (JEŚLI MASZ INNY)
     const API_URL = "https://script.google.com/macros/s/AKfycbwITEYeeJMhwBvCygn9f75aGAmkIfRL8XJV7erXPZYOj84GDMBXgWHLvut7rNXIBag4hA/exec";
     const KEY_NAME = "sheet1"; 
 
@@ -150,8 +149,83 @@
 
     const R32_LOCK_TIME = "2026-06-28T21:00:00";
 
-    // Oczyszczona z błędów tablica meczów (Tylko Faza Pucharowa)
+    // Pełna, bezpieczna baza meczów (Grupowe + Pucharowe)
     const allMatches = [
+        // FAZA GRUPOWA (Wyniki zapisane bezpiecznie w cudzysłowach jako stringi)
+        { id: "Mecz1", group: "Grupowa", t1: "Meksyk", t2: "RPA", score: "2:0" },
+        { id: "Mecz2", group: "Grupowa", t1: "Korea Płd.", t2: "Czechy", score: "0:2" },
+        { id: "Mecz3", group: "Grupowa", t1: "Kanada", t2: "Bośnia i Hercegowina", score: "2:0" },
+        { id: "Mecz4", group: "Grupowa", t1: "Katar", t2: "Szwajcaria", score: "0:3" },
+        { id: "Mecz5", group: "Grupowa", t1: "Brazylia", t2: "Maroko", score: "2:0" },
+        { id: "Mecz6", group: "Grupowa", t1: "Haiti", t2: "Szkocja", score: "1:2" },
+        { id: "Mecz7", group: "Grupowa", t1: "USA", t2: "Paragwaj", score: "1:1" },
+        { id: "Mecz8", group: "Grupowa", t1: "Australia", t2: "Turcja", score: "2:1" },
+        { id: "Mecz9", group: "Grupowa", t1: "Niemcy", t2: "Curacao", score: "3:0" },
+        { id: "Mecz10", group: "Grupowa", t1: "WKS", t2: "Ekwador", score: "2:2" },
+        { id: "Mecz11", group: "Grupowa", t1: "Holandia", t2: "Japonia", score: "1:1" },
+        { id: "Mecz12", group: "Grupowa", t1: "Szwecja", t2: "Tunezja", score: "2:1" },
+        { id: "Mecz13", group: "Grupowa", t1: "Belgia", t2: "Egipt", score: "2:1" },
+        { id: "Mecz14", group: "Grupowa", t1: "Iran", t2: "Nowa Zelandia", score: "2:0" },
+        { id: "Mecz15", group: "Grupowa", t1: "Hiszpania", t2: "Republika Zielonego Przylądka", score: "3:1" },
+        { id: "Mecz16", group: "Grupowa", t1: "Arabia Saudyjska", t2: "Urugwaj", score: "0:2" },
+        { id: "Mecz17", group: "Grupowa", t1: "Francja", t2: "Senegal", score: "2:0" },
+        { id: "Mecz18", group: "Grupowa", t1: "Irak", t2: "Norwegia", score: "1:3" },
+        { id: "Mecz19", group: "Grupowa", t1: "Argentyna", t2: "Algieria", score: "3:0" },
+        { id: "Mecz20", group: "Grupowa", t1: "Austria", t2: "Jordania", score: "2:0" },
+        { id: "Mecz21", group: "Grupowa", t1: "Portugalia", t2: "DR Konga", score: "2:0" },
+        { id: "Mecz22", group: "Grupowa", t1: "Uzbekistan", t2: "Kolumbia", score: "1:2" },
+        { id: "Mecz23", group: "Grupowa", t1: "Anglia", t2: "Chorwacja", score: "1:1" },
+        { id: "Mecz24", group: "Grupowa", t1: "Ghana", t2: "Panama", score: "2:1" },
+        { id: "Mecz25", group: "Grupowa", t1: "Meksyk", t2: "Korea Płd.", score: "2:1" },
+        { id: "Mecz26", group: "Grupowa", t1: "RPA", t2: "Czechy", score: "1:1" },
+        { id: "Mecz27", group: "Grupowa", t1: "Kanada", t2: "Katar", score: "3:0" },
+        { id: "Mecz28", group: "Grupowa", t1: "Bośnia i Hercegowina", t2: "Szwajcaria", score: "1:2" },
+        { id: "Mecz29", group: "Grupowa", t1: "Brazylia", t2: "Haiti", score: "4:0" },
+        { id: "Mecz30", group: "Grupowa", t1: "Maroko", t2: "Szkocja", score: "2:1" },
+        { id: "Mecz31", group: "Grupowa", t1: "USA", t2: "Australia", score: "2:0" },
+        { id: "Mecz32", group: "Grupowa", t1: "Paragwaj", t2: "Turcja", score: "1:0" },
+        { id: "Mecz33", group: "Grupowa", t1: "Niemcy", t2: "WKS", score: "1:1" },
+        { id: "Mecz34", group: "Grupowa", t1: "Curacao", t2: "Ekwador", score: "0:3" },
+        { id: "Mecz35", group: "Grupowa", t1: "Holandia", t2: "Szwecja", score: "2:0" },
+        { id: "Mecz36", group: "Grupowa", t1: "Japonia", t2: "Tunezja", score: "2:1" },
+        { id: "Mecz37", group: "Grupowa", t1: "Belgia", t2: "Iran", score: "2:0" },
+        { id: "Mecz38", group: "Grupowa", t1: "Egipt", t2: "Nowa Zelandia", score: "2:1" },
+        { id: "Mecz39", group: "Grupowa", t1: "Hiszpania", t2: "Arabia Saudyjska", score: "4:1" },
+        { id: "Mecz40", group: "Grupowa", t1: "Republika Zielonego Przylądka", t2: "Urugwaj", score: "1:2" },
+        { id: "Mecz41", group: "Grupowa", t1: "Francja", t2: "Irak", score: "3:0" },
+        { id: "Mecz42", group: "Grupowa", t1: "Senegal", t2: "Norwegia", score: "1:2" },
+        { id: "Mecz43", group: "Grupowa", t1: "Argentyna", t2: "Austria", score: "2:0" },
+        { id: "Mecz44", group: "Grupowa", t1: "Algieria", t2: "Jordania", score: "2:1" },
+        { id: "Mecz45", group: "Grupowa", t1: "Portugalia", t2: "Uzbekistan", score: "3:1" },
+        { id: "Mecz46", group: "Grupowa", t1: "DR Konga", t2: "Kolumbia", score: "1:2" },
+        { id: "Mecz47", group: "Grupowa", t1: "Anglia", t2: "Ghana", score: "2:0" },
+        { id: "Mecz48", group: "Grupowa", t1: "Chorwacja", t2: "Panama", score: "3:1" },
+        { id: "Mecz49", group: "Grupowa", t1: "Czechy", t2: "Meksyk", score: "1:2" },
+        { id: "Mecz50", group: "Grupowa", t1: "RPA", t2: "Korea Płd.", score: "2:1" },
+        { id: "Mecz51", group: "Grupowa", t1: "Szwajcaria", t2: "Kanada", score: "1:1" },
+        { id: "Mecz52", group: "Grupowa", t1: "Katar", t2: "Bośnia i Hercegowina", score: "1:2" },
+        { id: "Mecz53", group: "Grupowa", t1: "Szkocja", t2: "Brazylia", score: "0:3" },
+        { id: "Mecz54", group: "Grupowa", t1: "Maroko", t2: "Haiti", score: "3:1" },
+        { id: "Mecz55", group: "Grupowa", t1: "Turcja", t2: "USA", score: "1:2" },
+        { id: "Mecz56", group: "Grupowa", t1: "Australia", t2: "Paragwaj", score: "0:2" },
+        { id: "Mecz57", group: "Grupowa", t1: "Ekwador", t2: "Niemcy", score: "1:2" },
+        { id: "Mecz58", group: "Grupowa", t1: "WKS", t2: "Curacao", score: "3:1" },
+        { id: "Mecz59", group: "Grupowa", t1: "Tunezja", t2: "Holandia", score: "0:2" },
+        { id: "Mecz60", group: "Grupowa", t1: "Japonia", t2: "Szwecja", score: "2:1" },
+        { id: "Mecz61", group: "Grupowa", t1: "Nowa Zelandia", t2: "Belgia", score: "0:3" },
+        { id: "Mecz62", group: "Grupowa", t1: "Iran", t2: "Egipt", score: "1:2" },
+        { id: "Mecz63", group: "Grupowa", t1: "Urugwaj", t2: "Hiszpania", score: "1:1" },
+        { id: "Mecz64", group: "Grupowa", t1: "Arabia Saudyjska", t2: "Republika Zielonego Przylądka", score: "1:2" },
+        { id: "Mecz65", group: "Grupowa", t1: "Norwegia", t2: "Francja", score: "1:1" },
+        { id: "Mecz66", group: "Grupowa", t1: "Irak", t2: "Senegal", score: "0:2" },
+        { id: "Mecz67", group: "Grupowa", t1: "Jordania", t2: "Argentyna", score: "0:4" },
+        { id: "Mecz68", group: "Grupowa", t1: "Austria", t2: "Algieria", score: "2:1" },
+        { id: "Mecz69", group: "Grupowa", t1: "Kolumbia", t2: "Portugalia", score: "1:1" },
+        { id: "Mecz70", group: "Grupowa", t1: "Uzbekistan", t2: "DR Konga", score: "1:2" },
+        { id: "Mecz71", group: "Grupowa", t1: "Panama", t2: "Anglia", score: "0:3" },
+        { id: "Mecz72", group: "Grupowa", t1: "Ghana", t2: "Chorwacja", score: "1:2" },
+
+        // FAZA PUCHAROWA
         { id: "Mecz73", group: "1/16", t1: "RPA", t2: "Kanada", lock: R32_LOCK_TIME, score: "0:1" },
         { id: "Mecz74", group: "1/16", t1: "Brazylia", t2: "Japonia", lock: R32_LOCK_TIME, score: "2:1" },
         { id: "Mecz75", group: "1/16", t1: "Niemcy", t2: "Paragwaj", lock: R32_LOCK_TIME, score: "1:1" },
@@ -190,11 +264,11 @@
         { id: "Mecz104", group: "FINALE", t1: "Zwycięzca Półfinału 1", t2: "Zwycięzca Półfinału 2", lock: "2026-07-19T21:00:00", score: "", venue: "MetLife Stadium" }
     ];
 
-    // Mapowanie kolumn dla fazy grupowej, aby tabela mogła ją wyciągać z bazy danych
     const grupoweKeys = [];
     for(let i=1; i<=72; i++) { grupoweKeys.push(`mecz${i}`); }
 
     function isPreviousStageFinished(groupName) {
+        if (groupName === "Grupowa") return true;
         const stageMatches = allMatches.filter(m => m.group === groupName);
         if (stageMatches.length === 0) return true;
         return stageMatches.every(m => m.score !== undefined && m.score !== null && m.score.trim() !== "");
@@ -519,9 +593,13 @@
         trHead.innerHTML = "<th style='position:sticky; left:0; background:#1a2238; z-index:3;'>Gracz</th>";
         
         if (currentTableFilter === "grupowa") {
-            for(let i=1; i<=72; i++) { trHead.innerHTML += `<th>Mecz ${i}</th>`; }
+            for(let i=1; i<=72; i++) { 
+                const mG = allMatches.find(m => m.id === `Mecz${i}`);
+                const resSub = (mG && mG.score) ? `<br><span style="color:#01c38d; font-size:10px;">(${mG.score})</span>` : '';
+                trHead.innerHTML += `<th>Mecz ${i}${resSub}</th>`; 
+            }
         } else {
-            allMatches.forEach(m => {
+            allMatches.filter(m => m.group !== "Grupowa").forEach(m => {
                 const resSub = m.score ? `<br><span style="color:#01c38d; font-size:10px;">(${m.score})</span>` : '';
                 trHead.innerHTML += `<th><div class="th-match-header" style="flex-direction:column;"><div>${getFlagAnd3LetterCode(m.t1)} - ${getFlagAnd3LetterCode(m.t2)}</div>${resSub}</div></th>`;
             });
@@ -541,18 +619,10 @@
             if (!row.gracz) return;
             let totalPoints = 0, countExact = 0, countTrend = 0;
             
-            // Punktacja liczona ze wszystkich 104 meczów z bazy danych
-            for(let i=1; i<=72; i++) {
-                // Hardcoded punkty z historycznych meczów fazy grupowej (przykład logiki ewaluacji z bazy)
-                const pred = row[`mecz${i}`];
-                if(pred && pred.includes(":")) {
-                    // Tutaj można wpiąć oficjalną listę wyników grupy jeśli potrzebna, domyślnie system pobiera punkty per-gracz
-                }
-            }
-            
-            // Faza pucharowa punkty
+            // Podliczanie punktów z CAŁEGO turnieju (Grupowa + Pucharowa)
             allMatches.forEach(m => {
-                const evaluation = evaluatePrediction(row[m.id.toLowerCase()], m.score, m.group);
+                const val = row[m.id.toLowerCase()];
+                const evaluation = evaluatePrediction(val, m.score, m.group);
                 totalPoints += evaluation.points;
                 if (evaluation.type === "exact") countExact++;
                 if (evaluation.type === "trend") countTrend++;
@@ -564,11 +634,17 @@
             if (currentTableFilter === "grupowa") {
                 grupoweKeys.forEach(k => {
                     let val = row[k] || "-";
-                    if (row.gracz.toLowerCase() !== loggedInUser.toLowerCase() && (!loggedInUserRow || !loggedInUserRow[k])) val = "🔒 Ukryte";
-                    rowHtml += `<td>${val}</td>`;
+                    const mId = k.charAt(0).toUpperCase() + k.slice(1);
+                    const mG = allMatches.find(m => m.id === mId);
+                    const ev = evaluatePrediction(val, mG ? mG.score : "", "Grupowa");
+                    let css = ev.cssClass;
+                    if (row.gracz.toLowerCase() !== loggedInUser.toLowerCase() && (!loggedInUserRow || !loggedInUserRow[k])) {
+                        val = "🔒 Ukryte"; css = "";
+                    }
+                    rowHtml += `<td class="${css}">${val}</td>`;
                 });
             } else {
-                allMatches.forEach(m => {
+                allMatches.filter(m => m.group !== "Grupowa").forEach(m => {
                     let val = row[m.id.toLowerCase()] || "-";
                     const ev = evaluatePrediction(val, m.score, m.group);
                     let css = ev.cssClass;
@@ -580,7 +656,6 @@
             }
             tr.innerHTML = rowHtml; tbody.appendChild(tr);
             
-            // Do celów demonstracyjnych wyliczenie pozycji bazuje na wczytanych danych pucharowych + punktacji ogólnej z arkusza, jeśli przechowujesz sumę w kolumnie "punkty" możesz podmienić:
             let finalScore = row.punkty ? Number(row.punkty) : totalPoints;
             playersLeaderboard.push({ name: row.gracz, points: finalScore, exacts: countExact, trends: countTrend });
         });
