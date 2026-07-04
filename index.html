@@ -336,21 +336,19 @@
         { id: "Mecz104", group: "FINALE", t1: "Zwycięzca Półfinału 1", t2: "Zwycięzca Półfinału 2", lock: "2026-07-19T21:00:00", score: "", venue: "MetLife Stadium (Wielki Finał)" }
     ];
 
-    // Funkcja pomocnicza sprawdzająca, czy dana runda została już w pełni rozegrana w rzeczywistości
     function isPreviousStageFinished(groupName) {
         const stageMatches = allMatches.filter(m => m.group === groupName);
         if (stageMatches.length === 0) return true;
         return stageMatches.every(m => m.score !== undefined && m.score !== null && m.score.trim() !== "");
     }
 
-    // Wyznacza indeks fazy, która powinna być aktualnie aktywna do typowania
     function getActivePredictionGroupIndex() {
         for (let i = 0; i < groupsOrder.length; i++) {
             if (!isPreviousStageFinished(groupsOrder[i])) {
-                return i; // Zwróć pierwszą fazę, w której brakuje jeszcze oficjalnych wyników
+                return i; 
             }
         }
-        return groupsOrder.length - 1; // Jeśli wszystko uzupełnione, domyślnie ostatnia
+        return groupsOrder.length - 1; 
     }
 
     function getFlagAnd3LetterCode(teamName) {
@@ -380,7 +378,6 @@
             console.error("Błąd ładowania bazy przy starcie:", e);
         }
 
-        // Automatyczne ustawienie aktualnej fazy do typowania na podstawie wpisanych oficjalnych wyników
         currentGroupIndex = getActivePredictionGroupIndex();
 
         document.getElementById('loading-screen').classList.add('hidden');
@@ -448,7 +445,6 @@
             const span = document.createElement('span');
             const isDone = isGroupSubmittedByPlayer(g);
             
-            // Warunek odblokowania: faza jest dostępna, jeśli jej poprzedniczka ma komplet wyników wpisanych w tabeli `allMatches`
             let isLockedWorkflow = false;
             if (idx > 0) {
                 const prevGroupName = groupsOrder[idx - 1];
@@ -677,7 +673,6 @@
 
             alert(`Runda ${groupsOrder[currentGroupIndex]} została pomyślnie zapisana! 🚀`);
             
-            // Przejdź dalej tylko jeśli kolejna faza jest już dostępna w strukturze wyników
             if (currentGroupIndex < groupsOrder.length - 1 && isPreviousStageFinished(groupsOrder[currentGroupIndex])) {
                 currentGroupIndex++;
             }
@@ -708,19 +703,54 @@
         buildGlobalTableUI();
     }
 
-    function evaluatePrediction(playerPrediction, officialResult) {
+    // ZMIANA: Funkcja uwzględnia teraz parametr "matchGroup" w celu dynamicznej wyceny punktów
+    function evaluatePrediction(playerPrediction, officialResult, matchGroup) {
         if (!officialResult || officialResult === "" || !playerPrediction || playerPrediction === "-" || !playerPrediction.includes(":")) {
             return { points: 0, cssClass: "", type: "none" };
         }
+
+        // Domyślne stawki punktowe (dla fazy grupowej)
+        let exactPoints = 45;
+        let trendPoints = 30;
+
+        // Dynamiczne przypisanie punktów zależnie od fazy rozgrywek
+        switch (matchGroup) {
+            case "1/16":
+                exactPoints = 90;
+                trendPoints = 60;
+                break;
+            case "1/8":
+                exactPoints = 135;
+                trendPoints = 90;
+                break;
+            case "1/4":
+                exactPoints = 180;
+                trendPoints = 120;
+                break;
+            case "1/2":
+                exactPoints = 225;
+                trendPoints = 150;
+                break;
+            case "FINALE":
+                exactPoints = 270;
+                trendPoints = 180;
+                break;
+            default:
+                // Fazy od "A" do "L" (Grupowe) korzystają z domyślnych wartości 45/30
+                exactPoints = 45;
+                trendPoints = 30;
+                break;
+        }
+
         if (playerPrediction.trim() === officialResult.trim()) {
-            return { points: 45, cssClass: "cell-exact", type: "exact" };
+            return { points: exactPoints, cssClass: "cell-exact", type: "exact" };
         }
         const [pHome, pAway] = playerPrediction.split(":").map(Number);
         const [oHome, oAway] = officialResult.split(":").map(Number);
         const playerTrend = pHome > pAway ? 1 : (pHome < pAway ? -1 : 0);
         const officialTrend = oHome > oAway ? 1 : (oHome < oAway ? -1 : 0);
         if (playerTrend === officialTrend) {
-            return { points: 30, cssClass: "cell-trend", type: "trend" };
+            return { points: trendPoints, cssClass: "cell-trend", type: "trend" };
         }
         return { points: 0, cssClass: "cell-miss", type: "miss" };
     }
@@ -781,19 +811,21 @@
             const tr = document.createElement('tr');
             let rowHtml = `<td style="font-weight:bold; color:#01c38d; position:sticky; left:0; background:#131927; z-index:1;">${row.gracz}</td>`;
             
+            // ZMIANA: Przekazanie m.group jako 3. parametr do evaluatePrediction w celu wyliczenia rankingu ogólnego
             allMatches.forEach(m => {
                 const matchKey = m.id.toLowerCase();
                 const playerPrediction = row[matchKey] || '-';
-                const evaluation = evaluatePrediction(playerPrediction, m.score);
+                const evaluation = evaluatePrediction(playerPrediction, m.score, m.group);
                 totalPoints += evaluation.points;
                 if (evaluation.type === "exact") countExact++;
                 if (evaluation.type === "trend") countTrend++;
             });
 
+            // ZMIANA: Przekazanie m.group jako 3. parametr w widoku tabeli szczegółowej
             filteredMatches.forEach(m => {
                 const matchKey = m.id.toLowerCase();
                 const playerPrediction = row[matchKey] || '-';
-                const evaluation = evaluatePrediction(playerPrediction, m.score);
+                const evaluation = evaluatePrediction(playerPrediction, m.score, m.group);
 
                 let cellTextToShow = playerPrediction;
                 let finalCssClass = evaluation.cssClass;
