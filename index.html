@@ -217,8 +217,6 @@
     };
 
     const R32_LOCK_TIME = "2026-06-28T21:00:00";
-    // 📅 Data odblokowania fazy 1/8 (Sobota, 4 lipca, 03:30 czasu polskiego - po zakończeniu ostatniego meczu 1/16)
-    const R16_UNLOCK_TIME = "2026-07-04T03:30:00";
 
     const allMatches = [
         // --- ARCHIWALNA FAZA GRUPOWA ---
@@ -244,7 +242,7 @@
         { id: "Mecz56", group: "J", t1: "Austria", t2: "Jordania", lock: "2026-06-17T06:00:00", score: "" },
         { id: "Mecz61", group: "K", t1: "Portugalia", t2: "DR Kongo", lock: "2026-06-17T19:00:00", score: "" },
         { id: "Mecz67", group: "L", t1: "Anglia", t2: "Chorwacja", lock: "2026-06-17T22:00:00", score: "" },
-        { id: "Mecz68", group: "L", t1: "Ghana", t2: "Panama", lock: "2026-06-18T01:00:00", score: "" },
+        { id: "Mecz68", group: "L", t1: "Ghana", t2: "Panama", lock: "2026-06-18+01:00:00", score: "" },
         { id: "Mecz62", group: "K", t1: "Uzbekistan", t2: "Kolumbia", lock: "2026-06-18T04:00:00", score: "" },
         { id: "Mecz3", group: "A", t1: "Czechy", t2: "RPA", lock: "2026-06-18T18:00:00", score: "" },
         { id: "Mecz9", group: "B", t1: "Szwajcaria", t2: "Bośnia i Herc.", lock: "2026-06-18T21:00:00", score: "" },
@@ -295,7 +293,7 @@
         { id: "Mecz59", group: "J", t1: "Algieria", t2: "Austria", lock: "2026-06-28T04:00:00", score: "" },
         { id: "Mecz60", group: "J", t1: "Jordania", t2: "Argentyna", lock: "2026-06-28T04:00:00", score: "" },
 
-        // --- AKTYWNA FAZA 1/16 FINAŁU ---
+        // --- FAZA 1/16 FINAŁU (ZAKOŃCZONA) ---
         { id: "Mecz73", group: "1/16", t1: "RPA", t2: "Kanada", lock: R32_LOCK_TIME, score: "0:1" },
         { id: "Mecz74", group: "1/16", t1: "Brazylia", t2: "Japonia", lock: R32_LOCK_TIME, score: "2:1" },
         { id: "Mecz75", group: "1/16", t1: "Niemcy", t2: "Paragwaj", lock: R32_LOCK_TIME, score: "1:1" },
@@ -338,6 +336,23 @@
         { id: "Mecz104", group: "FINALE", t1: "Zwycięzca Półfinału 1", t2: "Zwycięzca Półfinału 2", lock: "2026-07-19T21:00:00", score: "", venue: "MetLife Stadium (Wielki Finał)" }
     ];
 
+    // Funkcja pomocnicza sprawdzająca, czy dana runda została już w pełni rozegrana w rzeczywistości
+    function isPreviousStageFinished(groupName) {
+        const stageMatches = allMatches.filter(m => m.group === groupName);
+        if (stageMatches.length === 0) return true;
+        return stageMatches.every(m => m.score !== undefined && m.score !== null && m.score.trim() !== "");
+    }
+
+    // Wyznacza indeks fazy, która powinna być aktualnie aktywna do typowania
+    function getActivePredictionGroupIndex() {
+        for (let i = 0; i < groupsOrder.length; i++) {
+            if (!isPreviousStageFinished(groupsOrder[i])) {
+                return i; // Zwróć pierwszą fazę, w której brakuje jeszcze oficjalnych wyników
+            }
+        }
+        return groupsOrder.length - 1; // Jeśli wszystko uzupełnione, domyślnie ostatnia
+    }
+
     function getFlagAnd3LetterCode(teamName) {
         if (!teamName) return "???";
         if (teamName.startsWith("Zwycięzca") || teamName.startsWith("Mecz") || teamName.startsWith("Ćwierć") || teamName.startsWith("Pół") || teamName.startsWith("Przegrany")) {
@@ -364,6 +379,9 @@
         } catch (e) {
             console.error("Błąd ładowania bazy przy starcie:", e);
         }
+
+        // Automatyczne ustawienie aktualnej fazy do typowania na podstawie wpisanych oficjalnych wyników
+        currentGroupIndex = getActivePredictionGroupIndex();
 
         document.getElementById('loading-screen').classList.add('hidden');
         const savedNick = localStorage.getItem('typerNick');
@@ -426,17 +444,16 @@
         const bar = document.getElementById('steps-bar');
         bar.innerHTML = "";
         
-        const now = new Date();
-        const unlockTime = new Date(R16_UNLOCK_TIME);
-        // Sprawdzamy sztywną blokadę czasową dla fazy 1/8 i kolejnych
-        const isTimeLockedForNextPhases = (now < unlockTime);
-
         groupsOrder.forEach((g, idx) => {
             const span = document.createElement('span');
             const isDone = isGroupSubmittedByPlayer(g);
             
-            // Każda faza powyżej 1/16 jest zablokowana do soboty do 3:30 rano
-            const isLockedWorkflow = (g !== "1/16" && isTimeLockedForNextPhases);
+            // Warunek odblokowania: faza jest dostępna, jeśli jej poprzedniczka ma komplet wyników wpisanych w tabeli `allMatches`
+            let isLockedWorkflow = false;
+            if (idx > 0) {
+                const prevGroupName = groupsOrder[idx - 1];
+                isLockedWorkflow = !isPreviousStageFinished(prevGroupName);
+            }
 
             if(isLockedWorkflow) {
                 span.className = `progress-step step-locked`;
@@ -452,11 +469,10 @@
     }
 
     function changeGroup(targetIndex) {
-        const targetGroup = groupsOrder[targetIndex];
-        const now = new Date();
-        const unlockTime = new Date(R16_UNLOCK_TIME);
-        
-        if (targetGroup !== "1/16" && now < unlockTime) return; 
+        if (targetIndex > 0) {
+            const prevGroupName = groupsOrder[targetIndex - 1];
+            if (!isPreviousStageFinished(prevGroupName)) return; 
+        }
 
         saveCurrentInputsToDraft();
         currentGroupIndex = targetIndex;
@@ -493,8 +509,11 @@
         const groupMatches = allMatches.filter(m => m.group === currentLetter);
         const isGroupPermanentlyLocked = isGroupSubmittedByPlayer(currentLetter);
 
-        const unlockTime = new Date(R16_UNLOCK_TIME);
-        const isRundeLockedByWorkflow = (currentLetter !== "1/16" && now < unlockTime);
+        let isRundeLockedByWorkflow = false;
+        if (currentGroupIndex > 0) {
+            const prevGroupName = groupsOrder[currentGroupIndex - 1];
+            isRundeLockedByWorkflow = !isPreviousStageFinished(prevGroupName);
+        }
 
         if(groupMatches.length === 0) {
             container.innerHTML = "<p style='text-align:center; color:#8a99ad;'>Brak meczów.</p>";
@@ -527,7 +546,7 @@
             let venueText = match.venue ? ` | 📍 ${match.venue}` : "";
             let statusMessage = '⏰ Mecz: ' + match.lock.replace('T', ' ').substring(0, 16) + venueText;
             if (isRundeLockedByWorkflow) {
-                statusMessage = '<span class="locked-text">🔒 Zablokowane do 04.07, godz. 03:30 (czekamy na koniec 1/16)</span>';
+                statusMessage = '<span class="locked-text">🔒 Zablokowane (Czekamy na oficjalne wyniki poprzedniej fazy)</span>';
             } else if (now >= lockTime) {
                 statusMessage = '<span class="locked-text">🔒 ZABLOKOWANY (Czas minął)</span>';
             } else if (isGroupPermanentlyLocked) {
@@ -575,16 +594,14 @@
     function validateGroupCompletion() {
         const currentLetter = groupsOrder[currentGroupIndex];
         const submitContainer = document.getElementById('submit-container');
-        const now = new Date();
-        const unlockTime = new Date(R16_UNLOCK_TIME);
 
         if (isGroupSubmittedByPlayer(currentLetter)) {
             submitContainer.innerHTML = `<div class="success-box">⭐ Ta runda została już przez Ciebie zatwierdzona i zapisana!</div>`;
             return;
         }
 
-        if (currentLetter !== "1/16" && now < unlockTime) {
-            submitContainer.innerHTML = `<div class="success-box" style="color:var(--danger); border-color:var(--danger);">🔒 Ta runda otworzy się automatycznie w sobotę o 03:30 po zakończeniu meczów 1/16.</div>`;
+        if (currentGroupIndex > 0 && !isPreviousStageFinished(groupsOrder[currentGroupIndex - 1])) {
+            submitContainer.innerHTML = `<div class="success-box" style="color:var(--danger); border-color:var(--danger);">🔒 Ta runda otworzy się automatycznie po zakończeniu wszystkich meczów poprzedniej fazy.</div>`;
             return;
         }
 
@@ -660,10 +677,8 @@
 
             alert(`Runda ${groupsOrder[currentGroupIndex]} została pomyślnie zapisana! 🚀`);
             
-            const now = new Date();
-            const unlockTime = new Date(R16_UNLOCK_TIME);
-            // Przejdź dalej tylko jeśli kolejna faza jest już czasowo dostępna
-            if (currentGroupIndex < groupsOrder.length - 1 && (groupsOrder[currentGroupIndex + 1] === "1/16" || now >= unlockTime)) {
+            // Przejdź dalej tylko jeśli kolejna faza jest już dostępna w strukturze wyników
+            if (currentGroupIndex < groupsOrder.length - 1 && isPreviousStageFinished(groupsOrder[currentGroupIndex])) {
                 currentGroupIndex++;
             }
             
