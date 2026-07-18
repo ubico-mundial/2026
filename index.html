@@ -576,7 +576,7 @@
         
         groupsOrder.forEach((g, idx) => {
             const span = document.createElement('span');
-            const isDone = isGroupSubmittedByPlayer(g) || (g === "FINALE" && existingDatabaseRows.some(r => r.gracz && r.gracz.toLowerCase() === (localStorage.getItem('typerNick') || "").toLowerCase() && r.mecz103));
+            const isDone = isGroupSubmittedByPlayer(g) || (g === "FINALE" && existingDatabaseRows.some(r => r.gracz && r.gracz.toLowerCase() === (localStorage.getItem('typerNick') || "").toLowerCase() && r.Mecz103));
             
             let isLockedWorkflow = false;
             if (idx > 0) {
@@ -826,7 +826,7 @@
             }
             
             const userRow = existingDatabaseRows.find(r => r.gracz && r.gracz.toLowerCase() === nick.toLowerCase());
-            if (userRow && userRow.mecz103) {
+            if (userRow && userRow.Mecz103) {
                 submitContainer.insertAdjacentHTML('beforebegin', `<div id="rewriter-info-box" class="success-box" style="margin-bottom:15px; background:rgba(255,165,0,0.1); border-color:orange; color:orange;">Zapisałeś już typy na Finał, ale możesz je dowolnie poprawiać do 23:00!</div>`);
             }
         }
@@ -1064,7 +1064,7 @@
 
                     let isHidden = false;
                     if (isFinaleMatch) {
-                        const hasLoggedInUserPredictedFinale = loggedInUserRow && loggedInUserRow["mecz103"] && loggedInUserRow["mecz104"];
+                        const hasLoggedInUserPredictedFinale = loggedInUserRow && loggedInUserRow["Mecz103"] && loggedInUserRow["Mecz104"];
                         if (now < lockTime && !hasLoggedInUserPredictedFinale) {
                             isHidden = true;
                         }
@@ -1088,7 +1088,7 @@
             if (currentTableFilter === "pucharowa") {
                 const now = new Date();
                 const lockTime = new Date("2026-07-18T23:00:00");
-                const hasLoggedInUserPredictedFinale = loggedInUserRow && loggedInUserRow["mecz103"] && loggedInUserRow["mecz104"];
+                const hasLoggedInUserPredictedFinale = loggedInUserRow && loggedInUserRow["Mecz103"] && loggedInUserRow["Mecz104"];
 
                 for(let i = 1; i <= 4; i++) {
                     let scorerText = row[`scorer${i}`] || "-";
