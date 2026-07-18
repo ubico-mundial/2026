@@ -17,10 +17,8 @@
         h1, h2 { text-align: center; color: var(--primary); margin-bottom: 5px; }
         .group-header-active { background: #1a2238; color: var(--primary); font-weight: bold; padding: 12px; border-radius: 6px; margin: 15px 0; text-align: center; font-size: 18px; border: 2px solid var(--primary); }
         .card { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 20px; box-sizing: border-box; }
-        input, button, select { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: none; box-sizing: border-box; }
+        input, button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: none; box-sizing: border-box; }
         input[type="text"] { background: #2a3558; color: white; font-size: 16px; text-align: center; }
-        select { background: #2a3558; color: white; font-size: 14px; border: 1px solid #4a5568; cursor: pointer; }
-        select:disabled { background: #131927; color: #6c7a9c; cursor: not-allowed; }
         button { background: var(--primary); color: var(--bg); font-weight: bold; cursor: pointer; font-size: 16px; }
         button:disabled { background: #4a5568; color: #a0aec0; cursor: not-allowed; box-shadow: none !important; }
         button:hover:not(:disabled) { opacity: 0.9; }
@@ -108,14 +106,6 @@
             border-color: var(--primary);
         }
 
-        /* Style dla sekcji strzelców */
-        .scorers-section { margin-top: 25px; padding-top: 15px; border-top: 2px dashed #2a3558; }
-        .scorers-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
-        @media (min-width: 480px) { .scorers-grid { grid-template-columns: 1fr 1fr; } }
-        .scorer-select-box { background: #1a2238; padding: 10px; border-radius: 6px; display: flex; flex-direction: column; }
-        .scorer-select-box label { font-size: 12px; color: #8a99ad; font-weight: bold; margin-bottom: 4px; }
-        .points-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: auto; }
-
         @media (min-width: 500px) {
             .logo-container img { max-width: 240px; }
         }
@@ -150,9 +140,6 @@
 
             <div id="group-title" class="group-header-active"></div>
             <div id="matches-list">Ładowanie meczów...</div>
-            
-            <!-- Dynamiczny kontener na wybór strzelców -->
-            <div id="scorers-container"></div>
 
             <div id="submit-container">
                 <button id="submit-btn" onclick="submitCurrentGroup()" style="margin-top: 25px; font-size: 18px; box-shadow: 0 4px 10px rgba(1, 195, 141, 0.3);" disabled>
@@ -208,132 +195,31 @@
     let existingDatabaseRows = [];
     let currentTableFilter = "pucharowa"; 
 
-    // Oficjalna lista strzelców goli w finałach (klucz: imię i nazwisko, wartość: liczba bramek)
-    const officialScorersResults = {
-        "Lionel Messi": 0,
-        "Kylian Mbappé": 2,
-        "Lamine Yamal": 0,
-        "Ousmane Dembélé": 1
-    };
-
-    // Pełna lista zawodników z podziałem na pozycje i reprezentacje (bez bramkarzy)
-    const playersDatabase = [
-        // HISZPANIA
-        { name: "Pedro Porro", position: "Defender", team: "Hiszpania", points: 250 },
-        { name: "Marcos Llorente", position: "Defender", team: "Hiszpania", points: 250 },
-        { name: "Aymeric Laporte", position: "Defender", team: "Hiszpania", points: 250 },
-        { name: "Pau Cubarsí", position: "Defender", team: "Hiszpania", points: 250 },
-        { name: "Marc Pubill", position: "Defender", team: "Hiszpania", points: 250 },
-        { name: "Eric García", position: "Defender", team: "Hiszpania", points: 250 },
-        { name: "Marc Cucurella", position: "Defender", team: "Hiszpania", points: 250 },
-        { name: "Alejandro Grimaldo", position: "Defender", team: "Hiszpania", points: 250 },
-        { name: "Rodri (Rodrigo Hernández)", position: "Midfielder", team: "Hiszpania", points: 175 },
-        { name: "Martín Zubimendi", position: "Midfielder", team: "Hiszpania", points: 175 },
-        { name: "Pedri (Pedro González)", position: "Midfielder", team: "Hiszpania", points: 175 },
-        { name: "Fabián Ruiz", position: "Midfielder", team: "Hiszpania", points: 175 },
-        { name: "Mikel Merino", position: "Midfielder", team: "Hiszpania", points: 175 },
-        { name: "Gavi (Pablo Páez)", position: "Midfielder", team: "Hiszpania", points: 175 },
-        { name: "Álex Baena", position: "Midfielder", team: "Hiszpania", points: 175 },
-        { name: "Lamine Yamal", position: "Forward", team: "Hiszpania", points: 100 },
-        { name: "Nico Williams", position: "Forward", team: "Hiszpania", points: 100 },
-        { name: "Mikel Oyarzabal", position: "Forward", team: "Hiszpania", points: 100 },
-        { name: "Yeremy Pino", position: "Forward", team: "Hiszpania", points: 100 },
-        { name: "Víctor Muñoz", position: "Forward", team: "Hiszpania", points: 100 },
-        { name: "Borja Iglesias", position: "Forward", team: "Hiszpania", points: 100 },
-        // ARGENTYNA
-        { name: "Cristian Romero", position: "Defender", team: "Argentyna", points: 250 },
-        { name: "Lisandro Martínez", position: "Defender", team: "Argentyna", points: 250 },
-        { name: "Nicolás Otamendi", position: "Defender", team: "Argentyna", points: 250 },
-        { name: "Nicolás Tagliafico", position: "Defender", team: "Argentyna", points: 250 },
-        { name: "Nahuel Molina", position: "Defender", team: "Argentyna", points: 250 },
-        { name: "Gonzalo Montiel", position: "Defender", team: "Argentyna", points: 250 },
-        { name: "Marcos Senesi", position: "Defender", team: "Argentyna", points: 250 },
-        { name: "Leonardo Balerdi", position: "Defender", team: "Argentyna", points: 250 },
-        { name: "Facundo Medina", position: "Defender", team: "Argentyna", points: 250 },
-        { name: "Rodrigo De Paul", position: "Midfielder", team: "Argentyna", points: 175 },
-        { name: "Alexis Mac Allister", position: "Midfielder", team: "Argentyna", points: 175 },
-        { name: "Enzo Fernández", position: "Midfielder", team: "Argentyna", points: 175 },
-        { name: "Leandro Paredes", position: "Midfielder", team: "Argentyna", points: 175 },
-        { name: "Giovani Lo Celso", position: "Midfielder", team: "Argentyna", points: 175 },
-        { name: "Exequiel Palacios", position: "Midfielder", team: "Argentyna", points: 175 },
-        { name: "Valentín Barco", position: "Midfielder", team: "Argentyna", points: 175 },
-        { name: "Nico Paz", position: "Midfielder", team: "Argentyna", points: 175 },
-        { name: "Thiago Almada", position: "Midfielder", team: "Argentyna", points: 175 },
-        { name: "Lionel Messi", position: "Forward", team: "Argentyna", points: 100 },
-        { name: "Julián Álvarez", position: "Forward", team: "Argentyna", points: 100 },
-        { name: "Lautaro Martínez", position: "Forward", team: "Argentyna", points: 100 },
-        { name: "Nicolás González", position: "Forward", team: "Argentyna", points: 100 },
-        { name: "Giuliano Simeone", position: "Forward", team: "Argentyna", points: 100 },
-        { name: "José Manuel López", position: "Forward", team: "Argentyna", points: 100 },
-        // FRANCJA
-        { name: "William Saliba", position: "Defender", team: "Francja", points: 250 },
-        { name: "Dayot Upamecano", position: "Defender", team: "Francja", points: 250 },
-        { name: "Jules Koundé", position: "Defender", team: "Francja", points: 250 },
-        { name: "Theo Hernández", position: "Defender", team: "Francja", points: 250 },
-        { name: "Ibrahima Konaté", position: "Defender", team: "Francja", points: 250 },
-        { name: "Lucas Hernandez", position: "Defender", team: "Francja", points: 250 },
-        { name: "Lucas Digne", position: "Defender", team: "Francja", points: 250 },
-        { name: "Malo Gusto", position: "Defender", team: "Francja", points: 250 },
-        { name: "Maxence Lacroix", position: "Defender", team: "Francja", points: 250 },
-        { name: "Aurélien Tchouaméni", position: "Midfielder", team: "Francja", points: 175 },
-        { name: "N'Golo Kanté", position: "Midfielder", team: "Francja", points: 175 },
-        { name: "Adrien Rabiot", position: "Midfielder", team: "Francja", points: 175 },
-        { name: "Warren Zaïre-Emery", position: "Midfielder", team: "Francja", points: 175 },
-        { name: "Kouadio Koné", position: "Midfielder", team: "Francja", points: 175 },
-        { name: "Rayan Cherki", position: "Midfielder", team: "Francja", points: 175 },
-        { name: "Maghnes Akliouche", position: "Midfielder", team: "Francja", points: 175 },
-        { name: "Kylian Mbappé", position: "Forward", team: "Francja", points: 100 },
-        { name: "Ousmane Dembélé", position: "Forward", team: "Francja", points: 100 },
-        { name: "Marcus Thuram", position: "Forward", team: "Francja", points: 100 },
-        { name: "Bradley Barcola", position: "Forward", team: "Francja", points: 100 },
-        { name: "Michael Olise", position: "Forward", team: "Francja", points: 100 },
-        { name: "Jean-Philippe Mateta", position: "Forward", team: "Francja", points: 100 },
-        { name: "Désiré Doué", position: "Forward", team: "Francja", points: 100 },
-        // ANGLIA
-        { name: "John Stones", position: "Defender", team: "Anglia", points: 250 },
-        { name: "Marc Guéhi", position: "Defender", team: "Anglia", points: 250 },
-        { name: "Ezri Konsa", position: "Defender", team: "Anglia", points: 250 },
-        { name: "Trevoh Chalobah", position: "Defender", team: "Anglia", points: 250 },
-        { name: "Dan Burn", position: "Defender", team: "Anglia", points: 250 },
-        { name: "Reece James", position: "Defender", team: "Anglia", points: 250 },
-        { name: "Djed Spence", position: "Defender", team: "Anglia", points: 250 },
-        { name: "Jarell Quansah", position: "Defender", team: "Anglia", points: 250 },
-        { name: "Nico O'Reilly", position: "Defender", team: "Anglia", points: 250 },
-        { name: "Declan Rice", position: "Midfielder", team: "Anglia", points: 175 },
-        { name: "Jude Bellingham", position: "Midfielder", team: "Anglia", points: 175 },
-        { name: "Kobbie Mainoo", position: "Midfielder", team: "Anglia", points: 175 },
-        { name: "Morgan Rogers", position: "Midfielder", team: "Anglia", points: 175 },
-        { name: "Eberechi Eze", position: "Midfielder", team: "Anglia", points: 175 },
-        { name: "Elliot Anderson", position: "Midfielder", team: "Anglia", points: 175 },
-        { name: "Jordan Henderson", position: "Midfielder", team: "Anglia", points: 175 },
-        { name: "Harry Kane", position: "Forward", team: "Anglia", points: 100 },
-        { name: "Bukayo Saka", position: "Forward", team: "Anglia", points: 100 },
-        { name: "Marcus Rashford", position: "Forward", team: "Anglia", points: 100 },
-        { name: "Anthony Gordon", position: "Forward", team: "Anglia", points: 100 },
-        { name: "Ollie Watkins", position: "Forward", team: "Anglia", points: 100 },
-        { name: "Noni Madueke", position: "Forward", team: "Anglia", points: 100 },
-        { name: "Ivan Toney", position: "Forward", team: "Anglia", points: 100 }
-    ];
-
     const teamFlags = {
-        "Meksyk": "🇲🇽", "RPA": "🇿🇦", "Korea Płd.": "🇰🇷", "Czechy": "🇨🇿",
-        "Kanada": "🇨🇦", "Bośnia i Herc.": "🇧🇦", "Bośnia i Hercegowina": "🇧🇦", "Katar": "🇶🇦", "Szwajcaria": "🇨🇭",
+        "Meksyk": "🇲🇽", "RPA": "🇿🇦", "Korea Płd.": "🇰🇷", "Czechy": "🇨🇿", "Korea Południowa": "🇰🇷",
+        "Kanada": "🇨🇦", "Bośnia i Herc.": "🇧🇦", "Bośnia i Hercegowina": "🇧🇦", "Bośnia i Herceg.": "🇧🇦", "Bośnia": "🇧🇦", "Katar": "🇶🇦", "Szwajcaria": "🇨🇭",
         "Brazylia": "🇧🇷", "Maroko": "🇲🇦", "Haiti": "🇭🇹", "Szkocja": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
         "USA": "🇺🇸", "Paragwaj": "🇵🇾", "Australia": "🇦🇺", "Turcja": "🇹🇷",
-        "Niemcy": "🇩🇪", "Curacao": "🇨🇼", "WKS": "🇨🇮", "Ekwador": "🇪🇨",
+        "Niemcy": "🇩🇪", "Curacao": "🇨🇼", "Curaçao": "🇨🇼", "WKS": "🇨🇮", "Ekwador": "🇪🇨",
         "Holandia": "🇳🇱", "Japonia": "🇯🇵", "Szwecja": "🇸🇪", "Tunezja": "🇹🇳",
-        "Belgia": "🇧🇪", "Egipt": "🇪🇬", "Iran": "🇮🇷", "Nowa Zelandia": "🇳🇿",
-        "Hiszpania": "🇪🇸", "Rep. Ziel. Przyl.": "🇨🇻", "Republika Zielonego Przylądka": "🇨🇻", "Arabia Saud.": "🇸🇦", "Urugwaj": "🇺🇾",
+        "Belgia": "🇧🇪", "Egipt": "🇪🇬", "Iran": "🇮🇷", "Nowa Zelandia": "🇳🇿", "Nowa Zel.": "🇳🇿",
+        "Hiszpania": "🇪🇸", "Rep. Ziel. Przyl.": "🇨🇻", "Rep. Zielonego Przyl.": "🇨🇻", "Rep. Z. Prz.": "🇨🇻", "Republika Zielonego Przylądka": "🇨🇻", "Zielony Przylądek": "🇨🇻", "Arabia Saud.": "🇸🇦", "Arabia Saudyjska": "🇸🇦", "Arabia S.": "🇸🇦", "Urugwaj": "🇺🇾",
         "Francja": "🇫🇷", "Senegal": "🇸🇳", "Irak": "🇮🇶", "Norwegia": "🇳🇴",
         "Argentyna": "🇦🇷", "Algieria": "🇩🇿", "Austria": "🇦🇹", "Jordania": "🇯🇴",
         "Portugalia": "🇵🇹", "DR Kongo": "🇨🇩", "DR Konga": "🇨🇩", "Uzbekistan": "🇺🇿", "Kolumbia": "🇨🇴",
-        "Anglia": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "Chorwacja": "🇭🇷", "Ghana": "🇬🇭", "Panama": "🇵🇦"
+        "Anglia": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "Chorwacja": "🇭🇷", "Ghana": "🇬🇭", "Panama": "🇵🇦",
+        "TBD": "❓", "Zwycięzca RPA/Kanada": "❓", "Zwycięzca Holandia/Maroko": "❓", "Zwycięzca Niemcy/Paragwaj": "❓", "Zwycięzca Francja/Szwecja": "❓",
+        "Zwycięzca Brazylia/Japonia": "❓", "Zwycięzca WKS/Norwegia": "❓", "Zwycięzca Meksyk/Ekwador": "❓", "Zwycięzca Anglia/DR Konga": "❓",
+        "Zwycięzca Portugalia/Chorwacja": "❓", "Zwycięzca Hiszpania/Austria": "❓", "Zwycięzca USA/Bośnia": "❓", "Zwycięzca Belgia/Senegal": "❓",
+        "Zwycięzca Argentyna/Zielony Przylądek": "❓", "Zwycięzca Australia/Egipt": "❓", "Zwycięzca Szwajcaria/Algieria": "❓", "Zwycięzca Kolumbia/Ghana": "❓",
+        "Mecz 1/8 finału (zachód)": "❓", "Ćwierćfinał 1": "❓", "Ćwierćfinał 2": "❓", "Ćwierćfinał 3": "❓", "Ćwierćfinał 4": "❓",
+        "Półfinał 1": "❓", "Półfinał 2": "❓", "Przegrany Półfinału 1": "❓", "Przegrany Półfinału 2": "❓", "Zwycięzca Półfinału 1": "❓", "Zwycięzca Półfinału 2": "❓"
     };
 
     const R32_LOCK_TIME = "2026-06-28T21:00:00";
 
     const allMatches = [
-        // --- FAZA GRUPOWA ---
+        // --- ARCHIWALNA FAZA GRUPOWA ---
         { id: "Mecz1", group: "A", t1: "Meksyk", t2: "RPA", lock: "2026-06-11T21:00:00", score: "2:0" },
         { id: "Mecz2", group: "A", t1: "Korea Płd.", t2: "Czechy", lock: "2026-06-12T04:00:00", score: "2:1" },
         { id: "Mecz7", group: "B", t1: "Kanada", t2: "Bośnia i Herc.", lock: "2026-06-12T21:00:00", score: "1:1" },
@@ -356,7 +242,7 @@
         { id: "Mecz56", group: "J", t1: "Austria", t2: "Jordania", lock: "2026-06-17T06:00:00", score: "3:1" },
         { id: "Mecz61", group: "K", t1: "Portugalia", t2: "DR Kongo", lock: "2026-06-17T19:00:00", score: "1:1" },
         { id: "Mecz67", group: "L", t1: "Anglia", t2: "Chorwacja", lock: "2026-06-17T22:00:00", score: "4:2" },
-        { id: "Mecz68", group: "L", t1: "Ghana", t2: "Panama", lock: "2026-06-18T01:00:00", score: "1:0" },
+        { id: "Mecz68", group: "L", t1: "Ghana", t2: "Panama", lock: "2026-06-18+01:00:00", score: "1:0" },
         { id: "Mecz62", group: "K", t1: "Uzbekistan", t2: "Kolumbia", lock: "2026-06-18T04:00:00", score: "1:3" },
         { id: "Mecz3", group: "A", t1: "Czechy", t2: "RPA", lock: "2026-06-18T18:00:00", score: "1:1" },
         { id: "Mecz9", group: "B", t1: "Szwajcaria", t2: "Bośnia i Herc.", lock: "2026-06-18T21:00:00", score: "4:1" },
@@ -405,9 +291,9 @@
         { id: "Mecz66", group: "K", t1: "DR Kongo", t2: "Uzbekistan", lock: "2026-06-28T01:30:00", score: "3:1" },
         { id: "Mecz65", group: "K", t1: "Kolumbia", t2: "Portugalia", lock: "2026-06-28T01:30:00", score: "0:0" },
         { id: "Mecz59", group: "J", t1: "Algieria", t2: "Austria", lock: "2026-06-28T04:00:00", score: "3:3" },
-        { id: "Mecz60", group: "J", t1: "Jordania", t2: "Argentyna", lock: "2026-06-28T04:00:00", score: "3:1" },
+        { id: "Mecz60", group: "J", t1: "Jordania", t2: "Argentyna", lock: "2026-06-28T04:00:00", score: "1:3" },
 
-        // --- FAZA 1/16 FINAŁU ---
+        // --- FAZA 1/16 FINAŁU (ZAKOŃCZONA) ---
         { id: "Mecz73", group: "1/16", t1: "RPA", t2: "Kanada", lock: R32_LOCK_TIME, score: "0:1" },
         { id: "Mecz74", group: "1/16", t1: "Brazylia", t2: "Japonia", lock: R32_LOCK_TIME, score: "2:1" },
         { id: "Mecz75", group: "1/16", t1: "Niemcy", t2: "Paragwaj", lock: R32_LOCK_TIME, score: "1:1" },
@@ -425,7 +311,7 @@
         { id: "Mecz87", group: "1/16", t1: "Argentyna", t2: "Republika Zielonego Przylądka", lock: R32_LOCK_TIME, score: "3:2" },
         { id: "Mecz88", group: "1/16", t1: "Kolumbia", t2: "Ghana", lock: R32_LOCK_TIME, score: "1:0" },
 
-        // --- FAZA 1/8 FINAŁU ---
+        // --- HARMONOGRAM FAZY 1/8 FINAŁU ---
         { id: "Mecz89", group: "1/8", t1: "Kanada", t2: "Maroko", lock: "2026-07-04T19:00:00", score: "0:3", venue: "Houston" },
         { id: "Mecz90", group: "1/8", t1: "Paragwaj", t2: "Francja", lock: "2026-07-04T22:00:00", score: "0:1", venue: "Filadelfia" },
         { id: "Mecz91", group: "1/8", t1: "Brazylia", t2: "Norwegia", lock: "2026-07-05T19:00:00", score: "1:2", venue: "East Rutherford" },
@@ -446,19 +332,9 @@
         { id: "Mecz102", group: "1/2", t1: "Anglia", t2: "Argentyna", lock: "2026-07-15T22:00:00", score: "1:2", venue: "Atlanta" },
 
         // --- MECZ O 3. MIEJSCE ORAZ FINAŁ ---
-        { id: "Mecz103", group: "FINALE", t1: "Francja", t2: "Anglia", lock: "2026-07-18T23:00:00", score: "4:6", venue: "Miami (Mecz o 3. miejsce)" },
+        { id: "Mecz103", group: "FINALE", t1: "Francja", t2: "Anglia", lock: "2026-07-18T22:00:00", score: "", venue: "Miami (Mecz o 3. miejsce)" },
         { id: "Mecz104", group: "FINALE", t1: "Hiszpania", t2: "Argentyna", lock: "2026-07-19T21:00:00", score: "", venue: "MetLife Stadium (Wielki Finał)" }
     ];
-
-    // Funkcja narzędziowa tworząca obiekt z kluczami pisanymi wyłącznie małymi literami
-    function normalizeObjectKeys(obj) {
-        if (!obj) return {};
-        const normalized = {};
-        Object.keys(obj).forEach(key => {
-            normalized[key.toLowerCase()] = obj[key];
-        });
-        return normalized;
-    }
 
     function isPreviousStageFinished(groupName) {
         const stageMatches = allMatches.filter(m => m.group === groupName);
@@ -477,6 +353,9 @@
 
     function getFlagAnd3LetterCode(teamName) {
         if (!teamName) return "???";
+        if (teamName.startsWith("Zwycięzca") || teamName.startsWith("Mecz") || teamName.startsWith("Ćwierć") || teamName.startsWith("Pół") || teamName.startsWith("Przegrany")) {
+            return teamName;
+        }
         const flag = teamFlags[teamName] || "";
         return `${flag} ${teamName.substring(0, 3).toUpperCase()}`;
     }
@@ -488,12 +367,6 @@
     }
 
     function isGroupSubmittedByPlayer(groupLetter) {
-        if (groupLetter === "FINALE") {
-            const now = new Date();
-            const lockTime = new Date("2026-07-18T23:00:00");
-            return now >= lockTime;
-        }
-        
         const nick = localStorage.getItem('typerNick') || "";
         return localStorage.getItem(`submitted_group_${groupLetter.toLowerCase()}_${nick.toLowerCase()}`) === "true";
     }
@@ -506,8 +379,8 @@
         }
 
         currentGroupIndex = getActivePredictionGroupIndex();
+
         document.getElementById('loading-screen').classList.add('hidden');
-        
         const savedNick = localStorage.getItem('typerNick');
         if (savedNick) { 
             showApp(savedNick);
@@ -540,12 +413,8 @@
 
     function fillLocalDraftFromDatabase(nick) {
         if (!existingDatabaseRows || existingDatabaseRows.length === 0) return;
-        
-        // Szukanie wiersza użytkownika z uwzględnieniem małych/wielkich liter
-        const userRowRaw = existingDatabaseRows.find(r => r.gracz && r.gracz.toLowerCase() === nick.toLowerCase());
-        if (userRowRaw) {
-            const userRow = normalizeObjectKeys(userRowRaw);
-            
+        const userRow = existingDatabaseRows.find(r => r.gracz && r.gracz.toLowerCase() === nick.toLowerCase());
+        if (userRow) {
             groupsOrder.forEach(g => {
                 const groupMatches = allMatches.filter(m => m.group === g);
                 let hasAtLeastOnePrediction = false;
@@ -561,16 +430,7 @@
                     }
                 });
 
-                if (g === "FINALE") {
-                    for(let i = 1; i <= 4; i++) {
-                        if(userRow[`scorer${i}`]) {
-                            localDraftScores[`scorer${i}`] = userRow[`scorer${i}`];
-                            hasAtLeastOnePrediction = true;
-                        }
-                    }
-                }
-
-                if (hasAtLeastOnePrediction && g !== "FINALE") {
+                if (hasAtLeastOnePrediction) {
                     localStorage.setItem(`submitted_group_${g.toLowerCase()}_${nick.toLowerCase()}`, "true");
                 }
             });
@@ -583,12 +443,7 @@
         
         groupsOrder.forEach((g, idx) => {
             const span = document.createElement('span');
-            const nick = localStorage.getItem('typerNick') || "";
-            
-            const userRowRaw = existingDatabaseRows.find(r => r.gracz && r.gracz.toLowerCase() === nick.toLowerCase());
-            const userRow = normalizeObjectKeys(userRowRaw);
-            
-            const isDone = isGroupSubmittedByPlayer(g) || (g === "FINALE" && userRow["mecz103"]);
+            const isDone = isGroupSubmittedByPlayer(g);
             
             let isLockedWorkflow = false;
             if (idx > 0) {
@@ -638,27 +493,14 @@
                 }
             }
         });
-
-        if(currentLetter === "FINALE") {
-            for(let i = 1; i <= 4; i++) {
-                const sel = document.getElementById(`scorer-select-${i}`);
-                if(sel) {
-                    localDraftScores[`scorer${i}`] = sel.value;
-                }
-            }
-        }
     }
 
     function renderActiveGroup() {
         const currentLetter = groupsOrder[currentGroupIndex];
-        const nick = localStorage.getItem('typerNick') || "";
         document.getElementById('group-title').innerText = `🏆 FAZA PUCHAROWA — RUNDA ${currentLetter}`;
         
         const container = document.getElementById('matches-list');
         container.innerHTML = "";
-        const scorersContainer = document.getElementById('scorers-container');
-        scorersContainer.innerHTML = ""; 
-
         const now = new Date();
         const groupMatches = allMatches.filter(m => m.group === currentLetter);
         const isGroupPermanentlyLocked = isGroupSubmittedByPlayer(currentLetter);
@@ -721,56 +563,6 @@
             container.appendChild(div);
         });
 
-        if (currentLetter === "FINALE") {
-            const isLockedGlobal = isGroupPermanentlyLocked || isRundeLockedByWorkflow;
-            
-            let scorersHtml = `
-                <div class="scorers-section">
-                    <h3 style="color: var(--primary); margin-bottom: 5px; text-align:center;">⚽ Wybierz 4 Strzelców Bramek</h3>
-                    <p style="font-size: 11px; color:#8a99ad; text-align:center; margin: 0 0 15px 0;">
-                        Wybierz 4 zawodników z meczu o 3. miejsce oraz Finału.<br>
-                        Wycena: Napastnik = <b>100 pkt</b> | Pomocnik = <b>175 pkt</b> | Obrońca = <b>250 pkt</b> (za każdego gola!)
-                    </p>
-                    <div class="scorers-grid">
-            `;
-
-            for(let i = 1; i <= 4; i++) {
-                const savedScorer = localDraftScores[`scorer${i}`] || "";
-                scorersHtml += `
-                    <div class="scorer-select-box">
-                        <label for="scorer-select-${i}">Zawodnik #${i}</label>
-                        <select id="scorer-select-${i}" ${isLockedGlobal ? 'disabled' : ''} onchange="handleScorerChange()">
-                            <option value="">-- Wybierz zawodnika --</option>
-                `;
-
-                const teams = ["Hiszpania", "Argentyna", "Francja", "Anglia"];
-                teams.forEach(t => {
-                    const flag = teamFlags[t] || "";
-                    scorersHtml += `<optgroup label="${flag} ${t.toUpperCase()}">`;
-                    const teamPlayers = playersDatabase.filter(p => p.team === t);
-                    teamPlayers.forEach(p => {
-                        const selectedAttr = (p.name === savedScorer) ? 'selected' : '';
-                        scorersHtml += `<option value="${p.name}" ${selectedAttr}>${p.name} (${p.position === 'Defender' ? 'Obrońca' : p.position === 'Midfielder' ? 'Pomocnik' : 'Napastnik'} - ${p.points}pkt)</option>`;
-                    });
-                    scorersHtml += `</optgroup>`;
-                });
-
-                scorersHtml += `
-                        </select>
-                    </div>
-                `;
-            }
-
-            scorersHtml += `</div></div>`;
-            scorersContainer.innerHTML = scorersHtml;
-            
-            const userRowRaw = existingDatabaseRows.find(r => r.gracz && r.gracz.toLowerCase() === nick.toLowerCase());
-            const userRow = normalizeObjectKeys(userRowRaw);
-            if (userRow && userRow["mecz103"]) {
-                submitContainer.insertAdjacentHTML('beforebegin', `<div id="rewriter-info-box" class="success-box" style="margin-bottom:15px; background:rgba(255,165,0,0.1); border-color:orange; color:orange;">Zapisałeś już typy na Finał, ale możesz je dowolnie poprawiać do 23:00!</div>`);
-            }
-        }
-
         validateGroupCompletion();
         refreshTwemoji(); 
     }
@@ -795,22 +587,17 @@
         validateGroupCompletion();
     }
 
-    function handleScorerChange() {
-        saveCurrentInputsToDraft();
-        validateGroupCompletion();
-    }
-
     function validateGroupCompletion() {
         const currentLetter = groupsOrder[currentGroupIndex];
         const submitContainer = document.getElementById('submit-container');
 
         if (isGroupSubmittedByPlayer(currentLetter)) {
-            submitContainer.innerHTML = `<div class="success-box">⭐ Czas na typowanie tej rundy dobiegł końca!</div>`;
+            submitContainer.innerHTML = `<div class="success-box">⭐ Ta runda została już przez Ciebie zatwierdzona i zapisana!</div>`;
             return;
         }
 
         if (currentGroupIndex > 0 && !isPreviousStageFinished(groupsOrder[currentGroupIndex - 1])) {
-            submitContainer.innerHTML = `<div class="success-box" style="color:var(--danger); border-color:var(--danger);">🔒 Ta runda otworzy się automatycznie po zakończeniu meczów poprzedniej fazy.</div>`;
+            submitContainer.innerHTML = `<div class="success-box" style="color:var(--danger); border-color:var(--danger);">🔒 Ta runda otworzy się automatycznie po zakończeniu wszystkich meczów poprzedniej fazy.</div>`;
             return;
         }
 
@@ -819,7 +606,6 @@
                 Wypełnij wszystkie mecze tej rundy
             </button>
         `;
-        
         const rows = document.querySelectorAll('.match-row');
         let allFilled = true;
         rows.forEach(row => {
@@ -832,24 +618,14 @@
                 }
             }
         });
-
-        if (currentLetter === "FINALE") {
-            for(let i = 1; i <= 4; i++) {
-                const sel = document.getElementById(`scorer-select-${i}`);
-                if(sel && sel.value === "") {
-                    allFilled = false;
-                }
-            }
-        }
-
         const btn = document.getElementById('submit-btn');
         if (btn) {
             if (allFilled) {
                 btn.removeAttribute('disabled');
-                btn.innerText = currentLetter === "FINALE" ? "💾 Zapisz / Aktualizuj Typy Finałowe!" : `💾 Zapisz i przejdź do Rund: ${groupsOrder[currentGroupIndex + 1]}`;
+                btn.innerText = currentGroupIndex === groupsOrder.length - 1 ? "💾 Zapisz i Zakończ Typowanie!" : `💾 Zapisz i przejdź do Rund: ${groupsOrder[currentGroupIndex + 1]}`;
             } else {
                 btn.setAttribute('disabled', 'true');
-                btn.innerText = currentLetter === "FINALE" ? "Wpisz oba wyniki i wybierz 4 strzelców bramek" : "Wpisz wszystkie otwarte wyniki tej rundy, aby zapisać";
+                btn.innerText = "Wpisz wszystkie otwarte wyniki tej rundy, aby zapisać";
             }
         }
     }
@@ -871,15 +647,6 @@
                 updateData[matchKey] = `${homeVal}:${awayVal}`;
             }
         });
-
-        if (currentLetter === "FINALE") {
-            for(let i = 1; i <= 4; i++) {
-                if(localDraftScores[`scorer${i}`]) {
-                    updateData[`scorer${i}`] = localDraftScores[`scorer${i}`];
-                }
-            }
-        }
-
         const btn = document.getElementById('submit-btn');
 
         try {
@@ -896,10 +663,7 @@
 
             if (responseData.status === "error") throw new Error(responseData.message || "Błąd bazy danych");
 
-            if (currentLetter !== "FINALE") {
-                localStorage.setItem(`submitted_group_${currentLetter.toLowerCase()}_${nick.toLowerCase()}`, "true");
-            }
-            
+            localStorage.setItem(`submitted_group_${currentLetter.toLowerCase()}_${nick.toLowerCase()}`, "true");
             const indexToUpdate = existingDatabaseRows.findIndex(r => r.gracz && r.gracz.toLowerCase() === nick.toLowerCase());
             if(indexToUpdate !== -1) {
                 Object.assign(existingDatabaseRows[indexToUpdate], updateData);
@@ -907,17 +671,13 @@
                 existingDatabaseRows.push(updateData);
             }
 
-            alert(`Runda ${groupsOrder[currentGroupIndex]} została pomyślnie zapisana w bazie! 🚀`);
+            alert(`Runda ${groupsOrder[currentGroupIndex]} została pomyślnie zapisana! 🚀`);
             
-            const infoBox = document.getElementById('rewriter-info-box');
-            if(infoBox) infoBox.remove();
-
             if (currentGroupIndex < groupsOrder.length - 1 && isPreviousStageFinished(groupsOrder[currentGroupIndex])) {
                 currentGroupIndex++;
             }
             
-            renderProgressBar(); 
-            renderActiveGroup(); 
+            renderProgressBar(); renderActiveGroup(); 
             try { await loadAllScores(); } catch(e){}
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -943,21 +703,43 @@
         buildGlobalTableUI();
     }
 
+    // ZMIANA: Funkcja uwzględnia teraz parametr "matchGroup" w celu dynamicznej wyceny punktów
     function evaluatePrediction(playerPrediction, officialResult, matchGroup) {
         if (!officialResult || officialResult === "" || !playerPrediction || playerPrediction === "-" || !playerPrediction.includes(":")) {
             return { points: 0, cssClass: "", type: "none" };
         }
 
+        // Domyślne stawki punktowe (dla fazy grupowej)
         let exactPoints = 45;
         let trendPoints = 30;
 
+        // Dynamiczne przypisanie punktów zależnie od fazy rozgrywek
         switch (matchGroup) {
-            case "1/16": exactPoints = 90; trendPoints = 60; break;
-            case "1/8": exactPoints = 135; trendPoints = 90; break;
-            case "1/4": exactPoints = 180; trendPoints = 120; break;
-            case "1/2": exactPoints = 225; trendPoints = 150; break;
-            case "FINALE": exactPoints = 270; trendPoints = 180; break;
-            default: exactPoints = 45; trendPoints = 30; break;
+            case "1/16":
+                exactPoints = 90;
+                trendPoints = 60;
+                break;
+            case "1/8":
+                exactPoints = 135;
+                trendPoints = 90;
+                break;
+            case "1/4":
+                exactPoints = 180;
+                trendPoints = 120;
+                break;
+            case "1/2":
+                exactPoints = 225;
+                trendPoints = 150;
+                break;
+            case "FINALE":
+                exactPoints = 270;
+                trendPoints = 180;
+                break;
+            default:
+                // Fazy od "A" do "L" (Grupowe) korzystają z domyślnych wartości 45/30
+                exactPoints = 45;
+                trendPoints = 30;
+                break;
         }
 
         if (playerPrediction.trim() === officialResult.trim()) {
@@ -971,15 +753,6 @@
             return { points: trendPoints, cssClass: "cell-trend", type: "trend" };
         }
         return { points: 0, cssClass: "cell-miss", type: "miss" };
-    }
-
-    function evaluateScorersPoints(playerName) {
-        if (!playerName || playerName === "" || playerName === "-") return 0;
-        const playerObj = playersDatabase.find(p => p.name === playerName);
-        if (!playerObj) return 0;
-        
-        const goalsScored = officialScorersResults[playerName] || 0;
-        return goalsScored * playerObj.points;
     }
 
     async function loadAllScores() {
@@ -1019,13 +792,6 @@
                     </div>
                 </th>`;
         });
-
-        if (currentTableFilter === "pucharowa") {
-            for(let i = 1; i <= 4; i++) {
-                trHead.innerHTML += `<th><div class="th-match-header">⚽ Strzelec #${i}</div></th>`;
-            }
-        }
-
         thead.appendChild(trHead);
 
         let playersLeaderboard = [];
@@ -1037,17 +803,15 @@
             return;
         }
 
-        const loggedInUserRowRaw = existingDatabaseRows.find(r => r.gracz && r.gracz.toLowerCase() === loggedInUser.toLowerCase());
-        const loggedInUserRow = normalizeObjectKeys(loggedInUserRowRaw);
+        const loggedInUserRow = existingDatabaseRows.find(r => r.gracz && r.gracz.toLowerCase() === loggedInUser.toLowerCase());
 
-        existingDatabaseRows.forEach(rowRaw => {
-            if (!rowRaw.gracz) return;
-            const row = normalizeObjectKeys(rowRaw);
-            
+        existingDatabaseRows.forEach(row => {
+            if (!row.gracz) return;
             let totalPoints = 0, countExact = 0, countTrend = 0;
             const tr = document.createElement('tr');
-            let rowHtml = `<td style="font-weight:bold; color:#01c38d; position:sticky; left:0; background:#131927; z-index:1;">${rowRaw.gracz}</td>`;
+            let rowHtml = `<td style="font-weight:bold; color:#01c38d; position:sticky; left:0; background:#131927; z-index:1;">${row.gracz}</td>`;
             
+            // ZMIANA: Przekazanie m.group jako 3. parametr do evaluatePrediction w celu wyliczenia rankingu ogólnego
             allMatches.forEach(m => {
                 const matchKey = m.id.toLowerCase();
                 const playerPrediction = row[matchKey] || '-';
@@ -1057,11 +821,7 @@
                 if (evaluation.type === "trend") countTrend++;
             });
 
-            for(let i = 1; i <= 4; i++) {
-                const scorerSelected = row[`scorer${i}`] || "";
-                totalPoints += evaluateScorersPoints(scorerSelected);
-            }
-
+            // ZMIANA: Przekazanie m.group jako 3. parametr w widoku tabeli szczegółowej
             filteredMatches.forEach(m => {
                 const matchKey = m.id.toLowerCase();
                 const playerPrediction = row[matchKey] || '-';
@@ -1070,26 +830,11 @@
                 let cellTextToShow = playerPrediction;
                 let finalCssClass = evaluation.cssClass;
 
-                if (rowRaw.gracz.toLowerCase() !== loggedInUser.toLowerCase()) {
-                    const now = new Date();
-                    const lockTime = new Date("2026-07-18T23:00:00");
-                    const isFinaleMatch = m.group === "FINALE";
+                if (row.gracz.toLowerCase() !== loggedInUser.toLowerCase()) {
+                    const loggedInUserPrediction = loggedInUserRow ? loggedInUserRow[matchKey] : "";
+                    const hasLoggedInUserPredicted = loggedInUserPrediction && loggedInUserPrediction.includes(":");
 
-                    let isHidden = false;
-                    if (isFinaleMatch) {
-                        const hasLoggedInUserPredictedFinale = loggedInUserRow && loggedInUserRow["mecz103"] && loggedInUserRow["mecz104"];
-                        if (now < lockTime && !hasLoggedInUserPredictedFinale) {
-                            isHidden = true;
-                        }
-                    } else {
-                        const loggedInUserPrediction = loggedInUserRow ? loggedInUserRow[matchKey] : "";
-                        const hasLoggedInUserPredicted = loggedInUserPrediction && loggedInUserPrediction.includes(":");
-                        if (!hasLoggedInUserPredicted) {
-                            isHidden = true;
-                        }
-                    }
-
-                    if (isHidden) {
+                    if (!hasLoggedInUserPredicted) {
                         cellTextToShow = "🔒 Ukryte";
                         finalCssClass = "";
                     }
@@ -1097,38 +842,10 @@
 
                 rowHtml += `<td class="${finalCssClass}">${cellTextToShow}</td>`;
             });
-
-            if (currentTableFilter === "pucharowa") {
-                const now = new Date();
-                const lockTime = new Date("2026-07-18T23:00:00");
-                const hasLoggedInUserPredictedFinale = loggedInUserRow && loggedInUserRow["mecz103"] && loggedInUserRow["mecz104"];
-
-                for(let i = 1; i <= 4; i++) {
-                    let scorerText = row[`scorer${i}`] || "-";
-                    let scorerCss = "";
-
-                    if (scorerText !== "-" && scorerText !== "") {
-                        const scorerGoals = officialScorersResults[scorerText] || 0;
-                        if (scorerGoals > 0) {
-                            scorerCss = "cell-exact";
-                            // Dynamiczne generowanie dokładnej ilości piłek
-                            const ballEmojis = " ⚽".repeat(scorerGoals);
-                            scorerText += ` (${scorerGoals}${ballEmojis})`;
-                        }
-                    }
-
-                    if (rowRaw.gracz.toLowerCase() !== loggedInUser.toLowerCase() && now < lockTime && !hasLoggedInUserPredictedFinale) {
-                        scorerText = "🔒 Ukryte";
-                        scorerCss = "";
-                    }
-
-                    rowHtml += `<td class="${scorerCss}">${scorerText}</td>`;
-                }
-            }
             
             tr.innerHTML = rowHtml;
             tbody.appendChild(tr);
-            playersLeaderboard.push({ name: rowRaw.gracz, points: totalPoints, exacts: countExact, trends: countTrend });
+            playersLeaderboard.push({ name: row.gracz, points: totalPoints, exacts: countExact, trends: countTrend });
         });
 
         playersLeaderboard.sort((a, b) => b.points !== a.points ? b.points - a.points : b.exacts - a.exacts);
