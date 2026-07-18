@@ -17,8 +17,10 @@
         h1, h2 { text-align: center; color: var(--primary); margin-bottom: 5px; }
         .group-header-active { background: #1a2238; color: var(--primary); font-weight: bold; padding: 12px; border-radius: 6px; margin: 15px 0; text-align: center; font-size: 18px; border: 2px solid var(--primary); }
         .card { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 20px; box-sizing: border-box; }
-        input, button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: none; box-sizing: border-box; }
+        input, button, select { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: none; box-sizing: border-box; }
         input[type="text"] { background: #2a3558; color: white; font-size: 16px; text-align: center; }
+        select { background: #2a3558; color: white; font-size: 14px; border: 1px solid #4a5568; cursor: pointer; }
+        select:disabled { background: #131927; color: #6c7a9c; cursor: not-allowed; }
         button { background: var(--primary); color: var(--bg); font-weight: bold; cursor: pointer; font-size: 16px; }
         button:disabled { background: #4a5568; color: #a0aec0; cursor: not-allowed; box-shadow: none !important; }
         button:hover:not(:disabled) { opacity: 0.9; }
@@ -106,6 +108,17 @@
             border-color: var(--primary);
         }
 
+        /* Nowe style dla sekcji strzelców */
+        .scorers-section { margin-top: 25px; padding-top: 15px; border-top: 2px dashed #2a3558; }
+        .scorers-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
+        @media (min-width: 480px) { .scorers-grid { grid-template-columns: 1fr 1fr; } }
+        .scorer-select-box { background: #1a2238; padding: 10px; border-radius: 6px; display: flex; flex-direction: column; }
+        .scorer-select-box label { font-size: 12px; color: #8a99ad; font-weight: bold; margin-bottom: 4px; }
+        .points-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: auto; }
+        .badge-forward { background: #4a5568; color: #fff; }
+        .badge-midfielder { background: #b8860b; color: #fff; }
+        .badge-defender { background: #028a5a; color: #fff; }
+
         @media (min-width: 500px) {
             .logo-container img { max-width: 240px; }
         }
@@ -140,6 +153,9 @@
 
             <div id="group-title" class="group-header-active"></div>
             <div id="matches-list">Ładowanie meczów...</div>
+            
+            <!-- NOWA SEKCJA: Dynamiczny kontener na wybór strzelców -->
+            <div id="scorers-container"></div>
 
             <div id="submit-container">
                 <button id="submit-btn" onclick="submitCurrentGroup()" style="margin-top: 25px; font-size: 18px; box-shadow: 0 4px 10px rgba(1, 195, 141, 0.3);" disabled>
@@ -194,6 +210,113 @@
     let localDraftScores = {}; 
     let existingDatabaseRows = [];
     let currentTableFilter = "pucharowa"; 
+
+    // Oficjalna lista strzelców goli w finałach (klucz: imię i nazwisko z listy pilkarzy, wartość: liczba strzelonych bramek)
+    // Uzupelnij tę mapę realnymi strzelcami po zakończeniu meczów, aby system automatycznie przyznał punkty graczom!
+    const officialScorersResults = {
+        "Lionel Messi": 0,
+        "Kylian Mbappé": 0,
+        "Lamine Yamal": 0
+    };
+
+    // Pełna lista zawodników z podziałem na pozycje i reprezentacje (bez bramkarzy)
+    const playersDatabase = [
+        // HISZPANIA
+        { name: "Pedro Porro", position: "Defender", team: "Hiszpania", points: 250 },
+        { name: "Marcos Llorente", position: "Defender", team: "Hiszpania", points: 250 },
+        { name: "Aymeric Laporte", position: "Defender", team: "Hiszpania", points: 250 },
+        { name: "Pau Cubarsí", position: "Defender", team: "Hiszpania", points: 250 },
+        { name: "Marc Pubill", position: "Defender", team: "Hiszpania", points: 250 },
+        { name: "Eric García", position: "Defender", team: "Hiszpania", points: 250 },
+        { name: "Marc Cucurella", position: "Defender", team: "Hiszpania", points: 250 },
+        { name: "Alejandro Grimaldo", position: "Defender", team: "Hiszpania", points: 250 },
+        { name: "Rodri (Rodrigo Hernández)", position: "Midfielder", team: "Hiszpania", points: 175 },
+        { name: "Martín Zubimendi", position: "Midfielder", team: "Hiszpania", points: 175 },
+        { name: "Pedri (Pedro González)", position: "Midfielder", team: "Hiszpania", points: 175 },
+        { name: "Fabián Ruiz", position: "Midfielder", team: "Hiszpania", points: 175 },
+        { name: "Mikel Merino", position: "Midfielder", team: "Hiszpania", points: 175 },
+        { name: "Gavi (Pablo Páez)", position: "Midfielder", team: "Hiszpania", points: 175 },
+        { name: "Áxiel Baena", position: "Midfielder", team: "Hiszpania", points: 175 },
+        { name: "Lamine Yamal", position: "Forward", team: "Hiszpania", points: 100 },
+        { name: "Nico Williams", position: "Forward", team: "Hiszpania", points: 100 },
+        { name: "Mikel Oyarzabal", position: "Forward", team: "Hiszpania", points: 100 },
+        { name: "Yeremy Pino", position: "Forward", team: "Hiszpania", points: 100 },
+        { name: "Víctor Muñoz", position: "Forward", team: "Hiszpania", points: 100 },
+        { name: "Borja Iglesias", position: "Forward", team: "Hiszpania", points: 100 },
+        // ARGENTYNA
+        { name: "Cristian Romero", position: "Defender", team: "Argentyna", points: 250 },
+        { name: "Lisandro Martínez", position: "Defender", team: "Argentyna", points: 250 },
+        { name: "Nicolás Otamendi", position: "Defender", team: "Argentyna", points: 250 },
+        { name: "Nicolás Tagliafico", position: "Defender", team: "Argentyna", points: 250 },
+        { name: "Nahuel Molina", position: "Defender", team: "Argentyna", points: 250 },
+        { name: "Gonzalo Montiel", position: "Defender", team: "Argentyna", points: 250 },
+        { name: "Marcos Senesi", position: "Defender", team: "Argentyna", points: 250 },
+        { name: "Leonardo Balerdi", position: "Defender", team: "Argentyna", points: 250 },
+        { name: "Facundo Medina", position: "Defender", team: "Argentyna", points: 250 },
+        { name: "Rodrigo De Paul", position: "Midfielder", team: "Argentyna", points: 175 },
+        { name: "Alexis Mac Allister", position: "Midfielder", team: "Argentyna", points: 175 },
+        { name: "Enzo Fernández", position: "Midfielder", team: "Argentyna", points: 175 },
+        { name: "Leandro Paredes", position: "Midfielder", team: "Argentyna", points: 175 },
+        { name: "Giovani Lo Celso", position: "Midfielder", team: "Argentyna", points: 175 },
+        { name: "Exequiel Palacios", position: "Midfielder", team: "Argentyna", points: 175 },
+        { name: "Valentín Barco", position: "Midfielder / Defender", positionClean: "Midfielder", team: "Argentyna", points: 175 },
+        { name: "Nico Paz", position: "Midfielder", team: "Argentyna", points: 175 },
+        { name: "Thiago Almada", position: "Midfielder / Forward", positionClean: "Midfielder", team: "Argentyna", points: 175 },
+        { name: "Lionel Messi", position: "Forward", team: "Argentyna", points: 100 },
+        { name: "Julián Álvarez", position: "Forward", team: "Argentyna", points: 100 },
+        { name: "Lautaro Martínez", position: "Forward", team: "Argentyna", points: 100 },
+        { name: "Nicolás González", position: "Forward", team: "Argentyna", points: 100 },
+        { name: "Giuliano Simeone", position: "Forward", team: "Argentyna", points: 100 },
+        { name: "José Manuel López", position: "Forward", team: "Argentyna", points: 100 },
+        // FRANCJA
+        { name: "William Saliba", position: "Defender", team: "Francja", points: 250 },
+        { name: "Dayot Upamecano", position: "Defender", team: "Francja", points: 250 },
+        { name: "Jules Koundé", position: "Defender", team: "Francja", points: 250 },
+        { name: "Theo Hernández", position: "Defender", team: "Francja", points: 250 },
+        { name: "Ibrahima Konaté", position: "Defender", team: "Francja", points: 250 },
+        { name: "Lucas Hernandez", position: "Defender", team: "Francja", points: 250 },
+        { name: "Lucas Digne", position: "Defender", team: "Francja", points: 250 },
+        { name: "Malo Gusto", position: "Defender", team: "Francja", points: 250 },
+        { name: "Maxence Lacroix", position: "Defender", team: "Francja", points: 250 },
+        { name: "Aurélien Tchouaméni", position: "Midfielder", team: "Francja", points: 175 },
+        { name: "N'Golo Kanté", position: "Midfielder", team: "Francja", points: 175 },
+        { name: "Adrien Rabiot", position: "Midfielder", team: "Francja", points: 175 },
+        { name: "Warren Zaïre-Emery", position: "Midfielder", team: "Francja", points: 175 },
+        { name: "Kouadio Koné", position: "Midfielder", team: "Francja", points: 175 },
+        { name: "Rayan Cherki", position: "Midfielder", team: "Francja", points: 175 },
+        { name: "Maghnes Akliouche", position: "Midfielder", team: "Francja", points: 175 },
+        { name: "Kylian Mbappé", position: "Forward", team: "Francja", points: 100 },
+        { name: "Ousmane Dembélé", position: "Forward", team: "Francja", points: 100 },
+        { name: "Marcus Thuram", position: "Forward", team: "Francja", points: 100 },
+        { name: "Bradley Barcola", position: "Forward", team: "Francja", points: 100 },
+        { name: "Michael Olise", position: "Forward", team: "Francja", points: 100 },
+        { name: "Jean-Philippe Mateta", position: "Forward", team: "Francja", points: 100 },
+        { name: "Désiré Doué", position: "Forward", team: "Francja", points: 100 },
+        // ANGLIA
+        { name: "John Stones", position: "Defender", team: "Anglia", points: 250 },
+        { name: "Marc Guéhi", position: "Defender", team: "Anglia", points: 250 },
+        { name: "Ezri Konsa", position: "Defender", team: "Anglia", points: 250 },
+        { name: "Trevoh Chalobah", position: "Defender", team: "Anglia", points: 250 },
+        { name: "Dan Burn", position: "Defender", team: "Anglia", points: 250 },
+        { name: "Reece James", position: "Defender", team: "Anglia", points: 250 },
+        { name: "Djed Spence", position: "Defender", team: "Anglia", points: 250 },
+        { name: "Jarell Quansah", position: "Defender", team: "Anglia", points: 250 },
+        { name: "Nico O'Reilly", position: "Defender / Midfielder", positionClean: "Defender", team: "Anglia", points: 250 },
+        { name: "Declan Rice", position: "Midfielder", team: "Anglia", points: 175 },
+        { name: "Jude Bellingham", position: "Midfielder", team: "Anglia", points: 175 },
+        { name: "Kobbie Mainoo", position: "Midfielder", team: "Anglia", points: 175 },
+        { name: "Morgan Rogers", position: "Midfielder", team: "Anglia", points: 175 },
+        { name: "Eberechi Eze", position: "Midfielder", team: "Anglia", points: 175 },
+        { name: "Elliot Anderson", position: "Midfielder", team: "Anglia", points: 175 },
+        { name: "Jordan Henderson", position: "Midfielder", team: "Anglia", points: 175 },
+        { name: "Harry Kane", position: "Forward", team: "Anglia", points: 100 },
+        { name: "Bukayo Saka", position: "Forward", team: "Anglia", points: 100 },
+        { name: "Marcus Rashford", position: "Forward", team: "Anglia", points: 100 },
+        { name: "Anthony Gordon", position: "Forward", team: "Anglia", points: 100 },
+        { name: "Ollie Watkins", position: "Forward", team: "Anglia", points: 100 },
+        { name: "Noni Madueke", position: "Forward", team: "Anglia", points: 100 },
+        { name: "Ivan Toney", position: "Forward", team: "Anglia", points: 100 }
+    ];
 
     const teamFlags = {
         "Meksyk": "🇲🇽", "RPA": "🇿🇦", "Korea Płd.": "🇰🇷", "Czechy": "🇨🇿", "Korea Południowa": "🇰🇷",
@@ -288,7 +411,7 @@
         { id: "Mecz42", group: "G", t1: "Nowa Zelandia", t2: "Belgia", lock: "2026-06-27T05:00:00", score: "1:5" },
         { id: "Mecz72", group: "L", t1: "Chorwacja", t2: "Ghana", lock: "2026-06-27T23:00:00", score: "2:1" },
         { id: "Mecz71", group: "L", t1: "Panama", t2: "Anglia", lock: "2026-06-27T23:00:00", score: "0:2" },
-        { id: "Mecz66", group: "K", t1: "DR Kongo", t2: "Uzbekistan", lock: "2026-06-28T01:30:00", score: "3:1" },
+        { id: "Mecz66", group: "K", t1: "DR Kongo", t2: "Uzbekistan", lock: "2026-08-28T01:30:00", score: "3:1" },
         { id: "Mecz65", group: "K", t1: "Kolumbia", t2: "Portugalia", lock: "2026-06-28T01:30:00", score: "0:0" },
         { id: "Mecz59", group: "J", t1: "Algieria", t2: "Austria", lock: "2026-06-28T04:00:00", score: "3:3" },
         { id: "Mecz60", group: "J", t1: "Jordania", t2: "Argentyna", lock: "2026-06-28T04:00:00", score: "1:3" },
@@ -430,6 +553,16 @@
                     }
                 });
 
+                // Odczyt strzelców dla finałów
+                if (g === "FINALE") {
+                    for(let i = 1; i <= 4; i++) {
+                        if(userRow[`scorer${i}`]) {
+                            localDraftScores[`scorer${i}`] = userRow[`scorer${i}`];
+                            hasAtLeastOnePrediction = true;
+                        }
+                    }
+                }
+
                 if (hasAtLeastOnePrediction) {
                     localStorage.setItem(`submitted_group_${g.toLowerCase()}_${nick.toLowerCase()}`, "true");
                 }
@@ -493,6 +626,16 @@
                 }
             }
         });
+
+        // Zapis stanu strzelców
+        if(currentLetter === "FINALE") {
+            for(let i = 1; i <= 4; i++) {
+                const sel = document.getElementById(`scorer-select-${i}`);
+                if(sel) {
+                    localDraftScores[`scorer${i}`] = sel.value;
+                }
+            }
+        }
     }
 
     function renderActiveGroup() {
@@ -501,6 +644,9 @@
         
         const container = document.getElementById('matches-list');
         container.innerHTML = "";
+        const scorersContainer = document.getElementById('scorers-container');
+        scorersContainer.innerHTML = ""; // Czyść sekcję strzelców przy każdej zmianie grupy
+
         const now = new Date();
         const groupMatches = allMatches.filter(m => m.group === currentLetter);
         const isGroupPermanentlyLocked = isGroupSubmittedByPlayer(currentLetter);
@@ -563,6 +709,52 @@
             container.appendChild(div);
         });
 
+        // Dynamiczne renderowanie sekcji wyboru strzelców dla FINAŁU
+        if (currentLetter === "FINALE") {
+            const isLockedGlobal = isGroupPermanentlyLocked || isRundeLockedByWorkflow;
+            
+            let scorersHtml = `
+                <div class="scorers-section">
+                    <h3 style="color: var(--primary); margin-bottom: 5px; text-align:center;">⚽ Wybierz 4 Strzelców Bramek</h3>
+                    <p style="font-size: 11px; color:#8a99ad; text-align:center; margin: 0 0 15px 0;">
+                        Wybierz 4 zawodników z meczu o 3. miejsce oraz Finału.<br>
+                        Wycena: Napastnik = <b>100 pkt</b> | Pomocnik = <b>175 pkt</b> | Obrońca = <b>250 pkt</b> (za każdego gola!)
+                    </p>
+                    <div class="scorers-grid">
+            `;
+
+            for(let i = 1; i <= 4; i++) {
+                const savedScorer = localDraftScores[`scorer${i}`] || "";
+                scorersHtml += `
+                    <div class="scorer-select-box">
+                        <label for="scorer-select-${i}">Zawodnik #${i}</label>
+                        <select id="scorer-select-${i}" ${isLockedGlobal ? 'disabled' : ''} onchange="handleScorerChange()">
+                            <option value="">-- Wybierz zawodnika --</option>
+                `;
+
+                // Grupowanie zawodników według reprezentacji na liście rozwijanej
+                const teams = ["Hiszpania", "Argentyna", "Francja", "Anglia"];
+                teams.forEach(t => {
+                    const flag = teamFlags[t] || "";
+                    scorersHtml += `<optgroup label="${flag} ${t.toUpperCase()}">`;
+                    const teamPlayers = playersDatabase.filter(p => p.team === t);
+                    teamPlayers.forEach(p => {
+                        const selectedAttr = (p.name === savedScorer) ? 'selected' : '';
+                        scorersHtml += `<option value="${p.name}" ${selectedAttr}>${p.name} (${p.position} - ${p.points}pkt)</option>`;
+                    });
+                    scorersHtml += `</optgroup>`;
+                });
+
+                scorersHtml += `
+                        </select>
+                    </div>
+                `;
+            }
+
+            scorersHtml += `</div></div>`;
+            scorersContainer.innerHTML = scorersHtml;
+        }
+
         validateGroupCompletion();
         refreshTwemoji(); 
     }
@@ -587,6 +779,11 @@
         validateGroupCompletion();
     }
 
+    function handleScorerChange() {
+        saveCurrentInputsToDraft();
+        validateGroupCompletion();
+    }
+
     function validateGroupCompletion() {
         const currentLetter = groupsOrder[currentGroupIndex];
         const submitContainer = document.getElementById('submit-container');
@@ -606,6 +803,7 @@
                 Wypełnij wszystkie mecze tej rundy
             </button>
         `;
+        
         const rows = document.querySelectorAll('.match-row');
         let allFilled = true;
         rows.forEach(row => {
@@ -618,6 +816,17 @@
                 }
             }
         });
+
+        // Dodatkowa walidacja dla strzelców w rundzie finałowej
+        if (currentLetter === "FINALE") {
+            for(let i = 1; i <= 4; i++) {
+                const sel = document.getElementById(`scorer-select-${i}`);
+                if(sel && sel.value === "") {
+                    allFilled = false;
+                }
+            }
+        }
+
         const btn = document.getElementById('submit-btn');
         if (btn) {
             if (allFilled) {
@@ -625,7 +834,7 @@
                 btn.innerText = currentGroupIndex === groupsOrder.length - 1 ? "💾 Zapisz i Zakończ Typowanie!" : `💾 Zapisz i przejdź do Rund: ${groupsOrder[currentGroupIndex + 1]}`;
             } else {
                 btn.setAttribute('disabled', 'true');
-                btn.innerText = "Wpisz wszystkie otwarte wyniki tej rundy, aby zapisać";
+                btn.innerText = currentLetter === "FINALE" ? "Wpisz wyniki meczów i wybierz 4 strzelców bramek, aby zapisać" : "Wpisz wszystkie otwarte wyniki tej rundy, aby zapisać";
             }
         }
     }
@@ -647,6 +856,16 @@
                 updateData[matchKey] = `${homeVal}:${awayVal}`;
             }
         });
+
+        // Dołącz dane o strzelcach goli podczas wysyłki finału
+        if (currentLetter === "FINALE") {
+            for(let i = 1; i <= 4; i++) {
+                if(localDraftScores[`scorer${i}`]) {
+                    updateData[`scorer${i}`] = localDraftScores[`scorer${i}`];
+                }
+            }
+        }
+
         const btn = document.getElementById('submit-btn');
 
         try {
@@ -703,17 +922,14 @@
         buildGlobalTableUI();
     }
 
-    // ZMIANA: Funkcja uwzględnia teraz parametr "matchGroup" w celu dynamicznej wyceny punktów
     function evaluatePrediction(playerPrediction, officialResult, matchGroup) {
         if (!officialResult || officialResult === "" || !playerPrediction || playerPrediction === "-" || !playerPrediction.includes(":")) {
             return { points: 0, cssClass: "", type: "none" };
         }
 
-        // Domyślne stawki punktowe (dla fazy grupowej)
         let exactPoints = 45;
         let trendPoints = 30;
 
-        // Dynamiczne przypisanie punktów zależnie od fazy rozgrywek
         switch (matchGroup) {
             case "1/16":
                 exactPoints = 90;
@@ -736,7 +952,6 @@
                 trendPoints = 180;
                 break;
             default:
-                // Fazy od "A" do "L" (Grupowe) korzystają z domyślnych wartości 45/30
                 exactPoints = 45;
                 trendPoints = 30;
                 break;
@@ -753,6 +968,16 @@
             return { points: trendPoints, cssClass: "cell-trend", type: "trend" };
         }
         return { points: 0, cssClass: "cell-miss", type: "miss" };
+    }
+
+    // Nowa funkcja pomocnicza: Oblicza ile punktów gracz zdobył za wybranego strzelca bramki
+    function evaluateScorersPoints(playerName) {
+        if (!playerName || playerName === "" || playerName === "-") return 0;
+        const playerObj = playersDatabase.find(p => p.name === playerName);
+        if (!playerObj) return 0;
+        
+        const goalsScored = officialScorersResults[playerName] || 0;
+        return goalsScored * playerObj.points;
     }
 
     async function loadAllScores() {
@@ -792,6 +1017,14 @@
                     </div>
                 </th>`;
         });
+
+        // Dodanie nagłówków tabeli dla Strzelców, jeśli aktywny jest widok Fazy Pucharowej
+        if (currentTableFilter === "pucharowa") {
+            for(let i = 1; i <= 4; i++) {
+                trHead.innerHTML += `<th><div class="th-match-header">⚽ Strzelec #${i}</div></th>`;
+            }
+        }
+
         thead.appendChild(trHead);
 
         let playersLeaderboard = [];
@@ -811,7 +1044,7 @@
             const tr = document.createElement('tr');
             let rowHtml = `<td style="font-weight:bold; color:#01c38d; position:sticky; left:0; background:#131927; z-index:1;">${row.gracz}</td>`;
             
-            // ZMIANA: Przekazanie m.group jako 3. parametr do evaluatePrediction w celu wyliczenia rankingu ogólnego
+            // 1. Obliczanie punktów ze wszystkich meczów
             allMatches.forEach(m => {
                 const matchKey = m.id.toLowerCase();
                 const playerPrediction = row[matchKey] || '-';
@@ -821,7 +1054,13 @@
                 if (evaluation.type === "trend") countTrend++;
             });
 
-            // ZMIANA: Przekazanie m.group jako 3. parametr w widoku tabeli szczegółowej
+            // 2. Doliczanie punktów za strzelców bramek do Rankingu Ogólnego
+            for(let i = 1; i <= 4; i++) {
+                const scorerSelected = row[`scorer${i}`] || "";
+                totalPoints += evaluateScorersPoints(scorerSelected);
+            }
+
+            // 3. Budowanie komórek tabeli dla meczów w wybranym filtrze
             filteredMatches.forEach(m => {
                 const matchKey = m.id.toLowerCase();
                 const playerPrediction = row[matchKey] || '-';
@@ -842,6 +1081,34 @@
 
                 rowHtml += `<td class="${finalCssClass}">${cellTextToShow}</td>`;
             });
+
+            // 4. Budowanie komórek tabeli dla Strzelców (Widok Fazy Pucharowej)
+            if (currentTableFilter === "pucharowa") {
+                const finaleMatches = allMatches.filter(m => m.group === "FINALE");
+                // Blokada widoczności typów innych graczy dopóki zalogowany użytkownik sam nie prześle swoich typów na finały
+                const hasLoggedInUserPredictedFinale = loggedInUserRow && finaleMatches.every(m => loggedInUserRow[m.id.toLowerCase()] && loggedInUserRow[m.id.toLowerCase()].includes(":"));
+
+                for(let i = 1; i <= 4; i++) {
+                    let scorerText = row[`scorer${i}`] || "-";
+                    let scorerCss = "";
+
+                    // Sprawdzanie punktów i podświetlenia dla strzelca
+                    if (scorerText !== "-" && scorerText !== "") {
+                        const scorerGols = officialScorersResults[scorerText] || 0;
+                        if (scorerGols > 0) {
+                            scorerCss = "cell-exact";
+                            scorerText += ` (${scorerGols} ⚽)`;
+                        }
+                    }
+
+                    if (row.gracz.toLowerCase() !== loggedInUser.toLowerCase() && !hasLoggedInUserPredictedFinale) {
+                        scorerText = "🔒 Ukryte";
+                        scorerCss = "";
+                    }
+
+                    rowHtml += `<td class="${scorerCss}">${scorerText}</td>`;
+                }
+            }
             
             tr.innerHTML = rowHtml;
             tbody.appendChild(tr);
