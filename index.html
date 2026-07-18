@@ -209,16 +209,11 @@
     let currentTableFilter = "pucharowa"; 
 
     // Oficjalna lista strzelców goli w finałach (klucz: imię i nazwisko, wartość: liczba bramek)
-    // Zmień wartość '0' na realną liczbę bramek po meczach, a system sam rozliczy punkty!
     const officialScorersResults = {
         "Lionel Messi": 0,
         "Kylian Mbappé": 2,
         "Lamine Yamal": 0,
-       "Ousmane Dembélé": 1
-
-
-
-        
+        "Ousmane Dembélé": 1
     };
 
     // Pełna lista zawodników z podziałem na pozycje i reprezentacje (bez bramkarzy)
@@ -338,7 +333,7 @@
     const R32_LOCK_TIME = "2026-06-28T21:00:00";
 
     const allMatches = [
-        // --- ARCHIWALNA FAZA GRUPOWA ---
+        // --- FAZA GRUPOWA ---
         { id: "Mecz1", group: "A", t1: "Meksyk", t2: "RPA", lock: "2026-06-11T21:00:00", score: "2:0" },
         { id: "Mecz2", group: "A", t1: "Korea Płd.", t2: "Czechy", lock: "2026-06-12T04:00:00", score: "2:1" },
         { id: "Mecz7", group: "B", t1: "Kanada", t2: "Bośnia i Herc.", lock: "2026-06-12T21:00:00", score: "1:1" },
@@ -452,8 +447,18 @@
 
         // --- MECZ O 3. MIEJSCE ORAZ FINAŁ ---
         { id: "Mecz103", group: "FINALE", t1: "Francja", t2: "Anglia", lock: "2026-07-18T23:00:00", score: "4:6", venue: "Miami (Mecz o 3. miejsce)" },
-        { id: "Mecz104", group: "FINALE", t1: "Hiszpania", t2: "Argentyna", lock: "2026-07-19T21:00:00", score: "0:0", venue: "MetLife Stadium (Wielki Finał)" }
+        { id: "Mecz104", group: "FINALE", t1: "Hiszpania", t2: "Argentyna", lock: "2026-07-19T21:00:00", score: "", venue: "MetLife Stadium (Wielki Finał)" }
     ];
+
+    // Funkcja narzędziowa tworząca obiekt z kluczami pisanymi wyłącznie małymi literami
+    function normalizeObjectKeys(obj) {
+        if (!obj) return {};
+        const normalized = {};
+        Object.keys(obj).forEach(key => {
+            normalized[key.toLowerCase()] = obj[key];
+        });
+        return normalized;
+    }
 
     function isPreviousStageFinished(groupName) {
         const stageMatches = allMatches.filter(m => m.group === groupName);
@@ -483,14 +488,12 @@
     }
 
     function isGroupSubmittedByPlayer(groupLetter) {
-        // Nowa logika: Finały opierają się wyłącznie na czasie (blokada dzisiaj o 23:00)
         if (groupLetter === "FINALE") {
             const now = new Date();
             const lockTime = new Date("2026-07-18T23:00:00");
             return now >= lockTime;
         }
         
-        // Starsze rundy sprawdzają standardowo localStorage
         const nick = localStorage.getItem('typerNick') || "";
         return localStorage.getItem(`submitted_group_${groupLetter.toLowerCase()}_${nick.toLowerCase()}`) === "true";
     }
@@ -537,8 +540,12 @@
 
     function fillLocalDraftFromDatabase(nick) {
         if (!existingDatabaseRows || existingDatabaseRows.length === 0) return;
-        const userRow = existingDatabaseRows.find(r => r.gracz && r.gracz.toLowerCase() === nick.toLowerCase());
-        if (userRow) {
+        
+        // Szukanie wiersza użytkownika z uwzględnieniem małych/wielkich liter
+        const userRowRaw = existingDatabaseRows.find(r => r.gracz && r.gracz.toLowerCase() === nick.toLowerCase());
+        if (userRowRaw) {
+            const userRow = normalizeObjectKeys(userRowRaw);
+            
             groupsOrder.forEach(g => {
                 const groupMatches = allMatches.filter(m => m.group === g);
                 let hasAtLeastOnePrediction = false;
@@ -576,7 +583,12 @@
         
         groupsOrder.forEach((g, idx) => {
             const span = document.createElement('span');
-            const isDone = isGroupSubmittedByPlayer(g) || (g === "FINALE" && existingDatabaseRows.some(r => r.gracz && r.gracz.toLowerCase() === (localStorage.getItem('typerNick') || "").toLowerCase() && r.Mecz103));
+            const nick = localStorage.getItem('typerNick') || "";
+            
+            const userRowRaw = existingDatabaseRows.find(r => r.gracz && r.gracz.toLowerCase() === nick.toLowerCase());
+            const userRow = normalizeObjectKeys(userRowRaw);
+            
+            const isDone = isGroupSubmittedByPlayer(g) || (g === "FINALE" && userRow["mecz103"]);
             
             let isLockedWorkflow = false;
             if (idx > 0) {
@@ -709,7 +721,6 @@
             container.appendChild(div);
         });
 
-        // Dynamiczne renderowanie strzelców dla FINAŁU
         if (currentLetter === "FINALE") {
             const isLockedGlobal = isGroupPermanentlyLocked || isRundeLockedByWorkflow;
             
@@ -752,6 +763,12 @@
 
             scorersHtml += `</div></div>`;
             scorersContainer.innerHTML = scorersHtml;
+            
+            const userRowRaw = existingDatabaseRows.find(r => r.gracz && r.gracz.toLowerCase() === nick.toLowerCase());
+            const userRow = normalizeObjectKeys(userRowRaw);
+            if (userRow && userRow["mecz103"]) {
+                submitContainer.insertAdjacentHTML('beforebegin', `<div id="rewriter-info-box" class="success-box" style="margin-bottom:15px; background:rgba(255,165,0,0.1); border-color:orange; color:orange;">Zapisałeś już typy na Finał, ale możesz je dowolnie poprawiać do 23:00!</div>`);
+            }
         }
 
         validateGroupCompletion();
@@ -786,7 +803,6 @@
     function validateGroupCompletion() {
         const currentLetter = groupsOrder[currentGroupIndex];
         const submitContainer = document.getElementById('submit-container');
-        const nick = localStorage.getItem('typerNick') || "";
 
         if (isGroupSubmittedByPlayer(currentLetter)) {
             submitContainer.innerHTML = `<div class="success-box">⭐ Czas na typowanie tej rundy dobiegł końca!</div>`;
@@ -823,11 +839,6 @@
                 if(sel && sel.value === "") {
                     allFilled = false;
                 }
-            }
-            
-            const userRow = existingDatabaseRows.find(r => r.gracz && r.gracz.toLowerCase() === nick.toLowerCase());
-            if (userRow && userRow.Mecz103) {
-                submitContainer.insertAdjacentHTML('beforebegin', `<div id="rewriter-info-box" class="success-box" style="margin-bottom:15px; background:rgba(255,165,0,0.1); border-color:orange; color:orange;">Zapisałeś już typy na Finał, ale możesz je dowolnie poprawiać do 23:00!</div>`);
             }
         }
 
@@ -1026,13 +1037,16 @@
             return;
         }
 
-        const loggedInUserRow = existingDatabaseRows.find(r => r.gracz && r.gracz.toLowerCase() === loggedInUser.toLowerCase());
+        const loggedInUserRowRaw = existingDatabaseRows.find(r => r.gracz && r.gracz.toLowerCase() === loggedInUser.toLowerCase());
+        const loggedInUserRow = normalizeObjectKeys(loggedInUserRowRaw);
 
-        existingDatabaseRows.forEach(row => {
-            if (!row.gracz) return;
+        existingDatabaseRows.forEach(rowRaw => {
+            if (!rowRaw.gracz) return;
+            const row = normalizeObjectKeys(rowRaw);
+            
             let totalPoints = 0, countExact = 0, countTrend = 0;
             const tr = document.createElement('tr');
-            let rowHtml = `<td style="font-weight:bold; color:#01c38d; position:sticky; left:0; background:#131927; z-index:1;">${row.gracz}</td>`;
+            let rowHtml = `<td style="font-weight:bold; color:#01c38d; position:sticky; left:0; background:#131927; z-index:1;">${rowRaw.gracz}</td>`;
             
             allMatches.forEach(m => {
                 const matchKey = m.id.toLowerCase();
@@ -1056,15 +1070,14 @@
                 let cellTextToShow = playerPrediction;
                 let finalCssClass = evaluation.cssClass;
 
-                if (row.gracz.toLowerCase() !== loggedInUser.toLowerCase()) {
-                    // Blokada widoczności przed 23:00 lub dopóki zalogowany sam nie obstawi
+                if (rowRaw.gracz.toLowerCase() !== loggedInUser.toLowerCase()) {
                     const now = new Date();
                     const lockTime = new Date("2026-07-18T23:00:00");
                     const isFinaleMatch = m.group === "FINALE";
 
                     let isHidden = false;
                     if (isFinaleMatch) {
-                        const hasLoggedInUserPredictedFinale = loggedInUserRow && loggedInUserRow["Mecz103"] && loggedInUserRow["Mecz104"];
+                        const hasLoggedInUserPredictedFinale = loggedInUserRow && loggedInUserRow["mecz103"] && loggedInUserRow["mecz104"];
                         if (now < lockTime && !hasLoggedInUserPredictedFinale) {
                             isHidden = true;
                         }
@@ -1088,21 +1101,23 @@
             if (currentTableFilter === "pucharowa") {
                 const now = new Date();
                 const lockTime = new Date("2026-07-18T23:00:00");
-                const hasLoggedInUserPredictedFinale = loggedInUserRow && loggedInUserRow["Mecz103"] && loggedInUserRow["Mecz104"];
+                const hasLoggedInUserPredictedFinale = loggedInUserRow && loggedInUserRow["mecz103"] && loggedInUserRow["mecz104"];
 
                 for(let i = 1; i <= 4; i++) {
                     let scorerText = row[`scorer${i}`] || "-";
                     let scorerCss = "";
 
                     if (scorerText !== "-" && scorerText !== "") {
-                        const scorerGols = officialScorersResults[scorerText] || 0;
-                        if (scorerGols > 0) {
+                        const scorerGoals = officialScorersResults[scorerText] || 0;
+                        if (scorerGoals > 0) {
                             scorerCss = "cell-exact";
-                            scorerText += ` (${scorerGols} ⚽)`;
+                            // Dynamiczne generowanie dokładnej ilości piłek
+                            const ballEmojis = " ⚽".repeat(scorerGoals);
+                            scorerText += ` (${scorerGoals}${ballEmojis})`;
                         }
                     }
 
-                    if (row.gracz.toLowerCase() !== loggedInUser.toLowerCase() && now < lockTime && !hasLoggedInUserPredictedFinale) {
+                    if (rowRaw.gracz.toLowerCase() !== loggedInUser.toLowerCase() && now < lockTime && !hasLoggedInUserPredictedFinale) {
                         scorerText = "🔒 Ukryte";
                         scorerCss = "";
                     }
@@ -1113,7 +1128,7 @@
             
             tr.innerHTML = rowHtml;
             tbody.appendChild(tr);
-            playersLeaderboard.push({ name: row.gracz, points: totalPoints, exacts: countExact, trends: countTrend });
+            playersLeaderboard.push({ name: rowRaw.gracz, points: totalPoints, exacts: countExact, trends: countTrend });
         });
 
         playersLeaderboard.sort((a, b) => b.points !== a.points ? b.points - a.points : b.exacts - a.exacts);
