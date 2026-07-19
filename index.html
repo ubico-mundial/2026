@@ -116,8 +116,58 @@
         .scorer-select-box label { font-size: 12px; color: #8a99ad; font-weight: bold; margin-bottom: 4px; }
         .points-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: auto; }
 
+        /* NOWE STYLE DLA PODIUM */
+        .podium-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin: 20px 0 30px 0;
+            padding: 10px;
+            background: #1a2238;
+            border-radius: 12px;
+            height: 180px;
+            box-sizing: border-box;
+        }
+        .podium-place {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 30%;
+            text-align: center;
+        }
+        .podium-user {
+            font-size: 13px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+        .podium-pts {
+            font-size: 11px;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .podium-block {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #131927;
+            border-radius: 6px 6px 0 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .place-1 { order: 2; height: 100px; background: linear-gradient(135deg, #ffd700, #b8860b); font-size: 28px; }
+        .place-2 { order: 1; height: 75px; background: linear-gradient(135deg, #c0c0c0, #708090); font-size: 22px; margin-right: 2%; }
+        .place-3 { order: 3; height: 55px; background: linear-gradient(135deg, #cd7f32, #8b4513); font-size: 18px; margin-left: 2%; }
+
         @media (min-width: 500px) {
             .logo-container img { max-width: 240px; }
+            .podium-user { font-size: 14px; }
         }
     </style>
 </head>
@@ -143,6 +193,29 @@
     </div>
 
     <div id="app-screen" class="hidden">
+        
+        <!-- DYNAMICZNE PODIUM NA SAMEJ GÓRZE APLIKACJI -->
+        <div class="card" style="padding: 15px;">
+            <h3 style="text-align: center; margin-top: 0; color: #ffd700;">🥇 PODIUM TYPERA UBICO 👑</h3>
+            <div class="podium-container" id="podium-wrapper">
+                <div class="podium-place" style="order:1; margin-right:2%;">
+                    <div class="podium-user" id="p2-nick">-</div>
+                    <div class="podium-pts" id="p2-pts">0 pkt</div>
+                    <div class="podium-block" style="height: 75px; background: linear-gradient(135deg, #c0c0c0, #708090); font-size: 22px;">2</div>
+                </div>
+                <div class="podium-place" style="order:2;">
+                    <div class="podium-user" id="p1-nick">-</div>
+                    <div class="podium-pts" id="p1-pts">0 pkt</div>
+                    <div class="podium-block" style="height: 100px; background: linear-gradient(135deg, #ffd700, #b8860b); font-size: 28px;">1</div>
+                </div>
+                <div class="podium-place" style="order:3; margin-left:2%;">
+                    <div class="podium-user" id="p3-nick">-</div>
+                    <div class="podium-pts" id="p3-pts">0 pkt</div>
+                    <div class="podium-block" style="height: 55px; background: linear-gradient(135deg, #cd7f32, #8b4513); font-size: 18px;">3</div>
+                </div>
+            </div>
+        </div>
+
         <div class="card">
             <h3>Gracz: <span id="user-display" style="color:var(--primary)"></span></h3>
             
@@ -208,20 +281,13 @@
     let existingDatabaseRows = [];
     let currentTableFilter = "pucharowa"; 
 
-    // Oficjalna lista strzelców goli w finałach (klucz: imię i nazwisko, wartość: liczba bramek)
-    // Zmień wartość '0' na realną liczbę bramek po meczach, a system sam rozliczy punkty!
     const officialScorersResults = {
         "Lionel Messi": 0,
         "Kylian Mbappé": 2,
         "Lamine Yamal": 0,
-       "Ousmane Dembélé": 1
-
-
-
-        
+        "Ousmane Dembélé": 1
     };
 
-    // Pełna lista zawodników z podziałem na pozycje i reprezentacje (bez bramkarzy)
     const playersDatabase = [
         // HISZPANIA
         { name: "Pedro Porro", position: "Defender", team: "Hiszpania", points: 250 },
@@ -338,7 +404,6 @@
     const R32_LOCK_TIME = "2026-06-28T21:00:00";
 
     const allMatches = [
-        // --- ARCHIWALNA FAZA GRUPOWA ---
         { id: "Mecz1", group: "A", t1: "Meksyk", t2: "RPA", lock: "2026-06-11T21:00:00", score: "2:0" },
         { id: "Mecz2", group: "A", t1: "Korea Płd.", t2: "Czechy", lock: "2026-06-12T04:00:00", score: "2:1" },
         { id: "Mecz7", group: "B", t1: "Kanada", t2: "Bośnia i Herc.", lock: "2026-06-12T21:00:00", score: "1:1" },
@@ -412,7 +477,7 @@
         { id: "Mecz59", group: "J", t1: "Algieria", t2: "Austria", lock: "2026-06-28T04:00:00", score: "3:3" },
         { id: "Mecz60", group: "J", t1: "Jordania", t2: "Argentyna", lock: "2026-06-28T04:00:00", score: "3:1" },
 
-        // --- FAZA 1/16 FINAŁU ---
+        // --- FAZA PUCHAROWA ---
         { id: "Mecz73", group: "1/16", t1: "RPA", t2: "Kanada", lock: R32_LOCK_TIME, score: "0:1" },
         { id: "Mecz74", group: "1/16", t1: "Brazylia", t2: "Japonia", lock: R32_LOCK_TIME, score: "2:1" },
         { id: "Mecz75", group: "1/16", t1: "Niemcy", t2: "Paragwaj", lock: R32_LOCK_TIME, score: "1:1" },
@@ -430,7 +495,6 @@
         { id: "Mecz87", group: "1/16", t1: "Argentyna", t2: "Republika Zielonego Przylądka", lock: R32_LOCK_TIME, score: "3:2" },
         { id: "Mecz88", group: "1/16", t1: "Kolumbia", t2: "Ghana", lock: R32_LOCK_TIME, score: "1:0" },
 
-        // --- FAZA 1/8 FINAŁU ---
         { id: "Mecz89", group: "1/8", t1: "Kanada", t2: "Maroko", lock: "2026-07-04T19:00:00", score: "0:3", venue: "Houston" },
         { id: "Mecz90", group: "1/8", t1: "Paragwaj", t2: "Francja", lock: "2026-07-04T22:00:00", score: "0:1", venue: "Filadelfia" },
         { id: "Mecz91", group: "1/8", t1: "Brazylia", t2: "Norwegia", lock: "2026-07-05T19:00:00", score: "1:2", venue: "East Rutherford" },
@@ -440,17 +504,14 @@
         { id: "Mecz95", group: "1/8", t1: "Argentyna", t2: "Egipt", lock: "2026-07-07T17:00:00", score: "3:2", venue: "Atlanta" },
         { id: "Mecz96", group: "1/8", t1: "Szwajcaria", t2: "Kolumbia", lock: "2026-07-07T21:00:00", score: "0:0", venue: "Vancouver" },
 
-        // --- ĆWIERĆFINAŁY ---
         { id: "Mecz97", group: "1/4", t1: "Francja", t2: "Maroko", lock: "2026-07-09T21:00:00", score: "2:0", venue: "Boston" },
         { id: "Mecz98", group: "1/4", t1: "Hiszpania", t2: "Belgia", lock: "2026-07-10T23:00:00", score: "2:1", venue: "Los Angeles" },
         { id: "Mecz99", group: "1/4", t1: "Norwegia", t2: "Anglia", lock: "2026-07-11T19:00:00", score: "1:2", venue: "Miami" },
         { id: "Mecz100", group: "1/4", t1: "Argentyna", t2: "Szwajcaria", lock: "2026-07-11T23:00:00", score: "3:1", venue: "Kansas City" },
 
-        // --- PÓŁFINAŁY ---
         { id: "Mecz101", group: "1/2", t1: "Francja", t2: "Hiszpania", lock: "2026-07-14T22:00:00", score: "0:2", venue: "Dallas" },
         { id: "Mecz102", group: "1/2", t1: "Anglia", t2: "Argentyna", lock: "2026-07-15T22:00:00", score: "1:2", venue: "Atlanta" },
 
-        // --- MECZ O 3. MIEJSCE ORAZ FINAŁ ---
         { id: "Mecz103", group: "FINALE", t1: "Francja", t2: "Anglia", lock: "2026-07-18T23:00:00", score: "4:6", venue: "Miami (Mecz o 3. miejsce)" },
         { id: "Mecz104", group: "FINALE", t1: "Hiszpania", t2: "Argentyna", lock: "2026-07-19T21:00:00", score: "1:0", venue: "MetLife Stadium (Wielki Finał)" }
     ];
@@ -483,14 +544,11 @@
     }
 
     function isGroupSubmittedByPlayer(groupLetter) {
-        // Nowa logika: Finały opierają się wyłącznie na czasie (blokada dzisiaj o 23:00)
         if (groupLetter === "FINALE") {
             const now = new Date();
             const lockTime = new Date("2026-07-18T23:00:00");
             return now >= lockTime;
         }
-        
-        // Starsze rundy sprawdzają standardowo localStorage
         const nick = localStorage.getItem('typerNick') || "";
         return localStorage.getItem(`submitted_group_${groupLetter.toLowerCase()}_${nick.toLowerCase()}`) === "true";
     }
@@ -709,7 +767,6 @@
             container.appendChild(div);
         });
 
-        // Dynamiczne renderowanie strzelców dla FINAŁU
         if (currentLetter === "FINALE") {
             const isLockedGlobal = isGroupPermanentlyLocked || isRundeLockedByWorkflow;
             
@@ -1057,7 +1114,6 @@
                 let finalCssClass = evaluation.cssClass;
 
                 if (row.gracz.toLowerCase() !== loggedInUser.toLowerCase()) {
-                    // Blokada widoczności przed 23:00 lub dopóki zalogowany sam nie obstawi
                     const now = new Date();
                     const lockTime = new Date("2026-07-18T23:00:00");
                     const isFinaleMatch = m.group === "FINALE";
@@ -1117,6 +1173,27 @@
         });
 
         playersLeaderboard.sort((a, b) => b.points !== a.points ? b.points - a.points : b.exacts - a.exacts);
+        
+        // NOWOŚĆ: Aktualizacja dynamicznego podium na samej górze
+        if(playersLeaderboard.length >= 1) {
+            document.getElementById('p1-nick').innerText = playersLeaderboard[0].name;
+            document.getElementById('p1-pts').innerText = playersLeaderboard[0].points + " pkt";
+        }
+        if(playersLeaderboard.length >= 2) {
+            document.getElementById('p2-nick').innerText = playersLeaderboard[1].name;
+            document.getElementById('p2-pts').innerText = playersLeaderboard[1].points + " pkt";
+        } else {
+            document.getElementById('p2-nick').innerText = "-";
+            document.getElementById('p2-pts').innerText = "0 pkt";
+        }
+        if(playersLeaderboard.length >= 3) {
+            document.getElementById('p3-nick').innerText = playersLeaderboard[2].name;
+            document.getElementById('p3-pts').innerText = playersLeaderboard[2].points + " pkt";
+        } else {
+            document.getElementById('p3-nick').innerText = "-";
+            document.getElementById('p3-pts').innerText = "0 pkt";
+        }
+
         leaderboardBody.innerHTML = "";
         playersLeaderboard.forEach((player, index) => {
             const trRank = document.createElement('tr');
